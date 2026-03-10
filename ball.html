@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Metal VJ Loop</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            /* 更新为参考图的深邃蓝黑色渐变 */
+            background: radial-gradient(circle at 0% 100%, #0066ff 0%, #040a18 50%, #000000 100%);
+            font-family: sans-serif;
+            position: relative;
+            --noise-opacity: 0.08; /* 控制颗粒强度的变量 */
+        }
+        
+        /* 胶片颗粒噪点层 (覆盖在整个画面上方) */
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none; 
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: var(--noise-opacity);
+            z-index: 10;
+        }
+
+        canvas { 
+            display: block; 
+            width: 100vw; 
+            height: 100vh; 
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 新增：强制控制面板处于绝对的最上层，防止被画布或噪点遮挡 */
+        .dg.ac {
+            z-index: 9999 !important;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 20;
+        }
+
+        /* 新增：侧边栏抽屉容器 */
+        #audioWrapper {
+            position: absolute;
+            left: 0;
+            bottom: 40px;
+            /* 利用 transform 把自身宽度隐藏到屏幕左侧，只留下 28px 的小把手 */
+            transform: translateX(calc(-100% + 28px));
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 鼠标悬浮时，抽屉完全滑出 */
+        #audioWrapper:hover {
+            transform: translateX(0);
+        }
+
+        /* 抽屉弹出的小把手 */
+        #audioTab {
+            width: 28px;
+            height: 70px;
+            background: rgba(4, 10, 24, 0.65);
+            border: 1px solid rgba(0, 102, 255, 0.3);
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00aaff;
+            cursor: pointer;
+            backdrop-filter: blur(12px);
+            font-size: 11px;
+            font-family: monospace;
+            writing-mode: vertical-rl; /* 文字竖排 */
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* 录音状态下的把手样式 */
+        #audioWrapper.recording #audioTab {
+            color: #ff0055;
+            border-color: #ff0055;
+            text-shadow: 0 0 8px #ff0055;
+            background: rgba(255, 0, 85, 0.1);
+        }
+
+        /* 修改原本的音频面板：移除绝对定位，适应 Flex 布局 */
+        #audioPanel {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 12px 24px;
+            background: rgba(4, 10, 24, 0.65);
+            border: 1px solid rgba(0, 102, 255, 0.3);
+            border-radius: 0 12px 12px 0; /* 左边不圆角，贴合边缘 */
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 102, 255, 0.1);
+            backdrop-filter: blur(12px);
+            font-family: sans-serif;
+        }
+
+        #micToggle {
+            background: rgba(0, 85, 255, 0.2);
+            border: 1px solid #0055ff;
+            color: #00aaff;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 13px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #micToggle:hover {
+            background: rgba(0, 85, 255, 0.4);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 85, 255, 0.5);
+        }
+
+        #micToggle.active {
+            border-color: #ff0055;
+            color: #ff0055;
+            background: rgba(255, 0, 85, 0.15);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+        }
+
+        #visualizer {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            height: 36px;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bar-bg {
+            width: 8px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .bar-fill {
+            width: 100%;
+            height: 0%; /* 初始高度0，由JS控制 */
+            border-radius: 4px;
+            transition: height 0.05s linear; /* 略微平滑以防闪烁 */
+        }
+
+        #bar-bass { background: linear-gradient(to top, #ff0055, #ffaa00); }
+        #bar-mid { background: linear-gradient(to top, #00ffaa, #00aaff); }
+        #bar-treble { background: linear-gradient(to top, #0055ff, #aa00ff); }
+        /* 新增：代表动画引擎转速的特殊颜色 (白/黄渐变) */
+        #bar-speed { background: linear-gradient(to top, #ffffff, #ffee00); }
+
+        .bar-label {
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.5);
+            font-family: monospace;
+        }
+    </style>
+    <!-- Import Three.js and dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- 引入辉光后期处理所需的库 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <!-- 新增：炫光色散、胶片扫描线、暗角镜头特效库 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/RGBShiftShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/VignetteShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/FilmPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/FilmShader.js"></script>
+    <!-- 新增：OBJ 模型加载器 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+</head>
+<body>
+    <div id="loading">INITIALIZING 3D ENGINE...</div>
+    
+    <script>
+        window.onload = function() {
+            // Remove loading text
+            document.getElementById('loading').style.opacity = '0';
+            setTimeout(() => document.getElementById('loading').remove(), 500);
+
+            // 1. Scene Setup
+            const scene = new THREE.Scene();
+            // 移除纯色背景和雾效，以便显示CSS的渐变背景
+
+            const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 15;
+
+            // 移除 alpha: true，不再依赖 CSS 透明画布，解决后期辉光导致的黑屏问题
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimize for high-DPI
+            
+            // Enable physical accurate lighting and tone mapping for HDRI
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.4; // 默认曝光与控制面板一致
+            
+            document.body.appendChild(renderer.domElement);
+
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.autoRotate = false; // 修改：关闭自动旋转，让摄影机位置固定
+            controls.autoRotateSpeed = 1.5;
+            controls.enablePan = true; // 开启右键/双指平移功能
+
+            // 2. Cinematic Lighting (Simulating high-contrast environment)
+            const ambientLight = new THREE.AmbientLight(0x051022, 1.5); // 深蓝色环境光
+            scene.add(ambientLight);
+
+            // 主光源：偏冷的亮白色
+            const mainLight = new THREE.DirectionalLight(0xeef4ff, 1.5); 
+            mainLight.position.set(2, 5, 5);
+            scene.add(mainLight);
+
+            // 暖色高光：还原参考图中的橘金色反光 (非常关键)
+            const warmLight = new THREE.DirectionalLight(0xff7722, 3.5); 
+            warmLight.position.set(5, -2, 3);
+            scene.add(warmLight);
+
+            // 强烈的青蓝色补光：还原左下角的明亮蓝色调
+            const cyanLight = new THREE.PointLight(0x00aaff, 4.0, 50); 
+            cyanLight.position.set(-4, -4, 2);
+            scene.add(cyanLight);
+            
+            // 顶部深蓝光补光
+            const blueLight = new THREE.PointLight(0x1133ff, 3.0, 50); 
+            blueLight.position.set(0, 5, -5);
+            scene.add(blueLight);
+
+            // --- HDRI / Global Illumination Setup ---
+            const textureLoader = new THREE.TextureLoader();
+            // Note: If running on a local server, change this to your 'image_3eeffa.jpg' path!
+            const hdriUrl = 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/2294472375_24a3b8ef46_o.jpg'; 
+            
+            textureLoader.load(hdriUrl, function(texture) {
+                texture.mapping = THREE.EquirectangularReflectionMapping;
+                texture.encoding = THREE.sRGBEncoding;
+                
+                // 仅应用为全局光照（反射和环境光），不再设为背景
+                scene.environment = texture;
+            });
+
+            // --- 移除空间漂浮的烟尘粒子 ---
+
+            // --- 设置辉光后期处理 (Glow/Bloom Post-Processing) ---
+            const renderScene = new THREE.RenderPass(scene, camera);
+            
+            // 参数更新：分辨率, 发光强度 1.5, 辉光半径 0.8, 阈值 0.2
+            const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.8, 0.2);
+            
+            const composer = new THREE.EffectComposer(renderer);
+            composer.addPass(renderScene);
+            composer.addPass(bloomPass);
+
+            // --- 新增：彩虹色散特效 (Chromatic Aberration) ---
+            const rgbShiftPass = new THREE.ShaderPass(THREE.RGBShiftShader);
+            rgbShiftPass.uniforms['amount'].value = 0.0; // 根据截图归零
+            rgbShiftPass.uniforms['angle'].value = Math.PI * 0.25; // 色散角度
+            composer.addPass(rgbShiftPass);
+
+            // --- 新增：赛博朋克扫描线特效 (Scanlines) ---
+            const filmPass = new THREE.FilmPass(0.0, 0.5, 800, false); // 根据截图更新线强度为 0.5
+            // noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale
+            composer.addPass(filmPass);
+
+            // --- 新增：镜头暗角特效 (Vignette) ---
+            const vignettePass = new THREE.ShaderPass(THREE.VignetteShader);
+            vignettePass.uniforms['offset'].value = 1.0;
+            vignettePass.uniforms['darkness'].value = 2.0; // 根据截图更新为 2.0
+            composer.addPass(vignettePass);
+
+            // 3. Object & Material (Chrome-plated liquid metal)
+            const material = new THREE.MeshPhysicalMaterial({
+                color: 0x2f2c2c,
+                metalness: 0.9,
+                roughness: 0.0,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.258,
+                envMapIntensity: 4.2,
+                side: THREE.DoubleSide
+            });
+
+            // 使用 OBJLoader 异步加载本地 ball.obj 替换原有球体
+            let geometry = null;
+            let mesh = null;
+            let basePositions = null;
+            let vertexCount = 0;
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.load(
+                'ball.obj',
+                function (obj) {
+                    let foundMesh = false;
+                    obj.traverse(child => {
+                        if (foundMesh) return;
+                        if (child.isMesh && child.geometry && child.geometry.attributes && child.geometry.attributes.position) {
+                            foundMesh = true;
+                            geometry = child.geometry;
+
+                            // 将几何体居中并基于包围球半径进行缩放
+                            geometry.computeBoundingSphere();
+                            const radius = geometry.boundingSphere ? geometry.boundingSphere.radius : 1;
+                            geometry.center();
+
+                            const targetRadius = 2.0; // 与原始场景视觉大小相近
+                            const scaleFactor = targetRadius / (radius || 1);
+
+                            mesh = new THREE.Mesh(geometry, material);
+                            mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
+                            scene.add(mesh);
+
+                            const positionAttr = geometry.attributes.position;
+                            basePositions = new Float32Array(positionAttr.array.length);
+                            basePositions.set(positionAttr.array);
+                            vertexCount = positionAttr.count;
+                        }
+                    });
+
+                    if (!foundMesh) {
+                        console.error('OBJ file loaded, but no mesh with position attribute was found.');
+                    }
+                },
+                undefined,
+                function (err) {
+                    console.error('Failed to load ball.obj:', err);
+                }
+            );
+
+            // 4. GUI Controls - 仅保留背景、材质、环境光与后期特效，不再控制模型外形
+            const params = {
+                exposure: 1.4,
+                envIntensity: 4.2,
+                bloomStrength: 1.5,
+                bloomRadius: 0.46,
+                bloomThreshold: 0.15,
+                rgbShiftAmt: 0.0,
+                scanlines: 0.5,
+                vignetteDarkness: 2.0
+            };
+
+            const bgParams = {
+                type: 'Gradient',
+                color1: '#384fff',
+                colorMid: '#5d657a',
+                color2: '#000000',
+                noise: 0.055
+            };
+
+            // 暴露到 window，方便在 DevTools 中调试
+            window.params = params;
+            window.bgParams = bgParams;
+
+            const gui = new dat.GUI({ width: 320 });
+            gui.close();
+            gui.domElement.style.display = 'none'; // 默认隐藏控制面板，按 G 键呼出
+            gui.close();
+            gui.domElement.style.display = 'none'; // 默认隐藏控制面板
+
+            // --- 新增：背景与噪点控制面板 ---
+            const bgFolder = gui.addFolder('Background (背景 & 噪点)');
+            
+            function updateBackground() {
+                // 使用 Canvas 动态绘制背景贴图，并作为 3D 场景的背景
+                // 彻底解决 EffectComposer 后期处理导致的透明度丢失问题
+                const size = 512;
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+
+                if (bgParams.type === 'Solid') {
+                    ctx.fillStyle = bgParams.color2;
+                    ctx.fillRect(0, 0, size, size);
+                } else {
+                    // 在画布左下角绘制径向渐变
+                    const gradient = ctx.createRadialGradient(0, size, 0, 0, size, size * 1.5);
+                    gradient.addColorStop(0, bgParams.color1);
+                    gradient.addColorStop(0.5, bgParams.colorMid);
+                    gradient.addColorStop(1, bgParams.color2);
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, size, size);
+                }
+
+                const texture = new THREE.CanvasTexture(canvas);
+                texture.encoding = THREE.sRGBEncoding; // 匹配渲染器的色彩空间
+                
+                // 清理旧背景并应用新背景
+                if (scene.background && scene.background.dispose) {
+                    scene.background.dispose();
+                }
+                scene.background = texture;
+            }
+            
+            bgFolder.add(bgParams, 'type', ['Solid', 'Gradient']).name('Bg Type (类型)').onChange(updateBackground);
+            bgFolder.addColor(bgParams, 'color1').name('Grad Start (渐变起)').onChange(updateBackground);
+            bgFolder.addColor(bgParams, 'colorMid').name('Grad Mid (渐变中)').onChange(updateBackground);
+            bgFolder.addColor(bgParams, 'color2').name('Base/End (纯色/尾)').onChange(updateBackground);
+            bgFolder.add(bgParams, 'noise', 0.0, 0.5).name('Film Grain (颗粒强度)').onChange(v => {
+                document.body.style.setProperty('--noise-opacity', v);
+            });
+            // bgFolder.open(); // 默认收起背景以节省空间
+            
+            // 初始化背景和胶片颗粒强度
+            updateBackground();
+            document.body.style.setProperty('--noise-opacity', bgParams.noise);
+            
+            // 新增：材质控制面板
+            const matParams = { color: material.color.getHex() };
+            const matFolder = gui.addFolder('Material (材质控制)');
+            matFolder.addColor(matParams, 'color').name('Base Color').onChange(v => material.color.setHex(v));
+            matFolder.add(material, 'metalness', 0.0, 1.0).name('Metalness (金属度)');
+            matFolder.add(material, 'roughness', 0.0, 1.0).name('Roughness (粗糙度)');
+            matFolder.add(material, 'clearcoat', 0.0, 1.0).name('Clearcoat (清漆层)');
+            matFolder.add(material, 'clearcoatRoughness', 0.0, 1.0).name('CC Roughness');
+            matFolder.open();
+
+            const lightFolder = gui.addFolder('Environment (环境)');
+            lightFolder.add(params, 'exposure', 0.1, 3.0).name('Exposure').onChange(v => renderer.toneMappingExposure = v);
+            lightFolder.add(params, 'envIntensity', 0.0, 5.0).name('HDRI Intensity').onChange(v => material.envMapIntensity = v);
+            lightFolder.open();
+
+            const postFolder = gui.addFolder('Post-Processing (后期辉光 & 特效)');
+            postFolder.add(params, 'bloomStrength', 0.0, 3.0).name('Glow Strength').onChange(v => bloomPass.strength = v);
+            postFolder.add(params, 'bloomRadius', 0.0, 2.0).name('Glow Radius').onChange(v => bloomPass.radius = v);
+            postFolder.add(params, 'bloomThreshold', 0.0, 1.0).name('Glow Threshold').onChange(v => bloomPass.threshold = v);
+            
+            // 新增特效的控制项
+            postFolder.add(params, 'rgbShiftAmt', 0.0, 0.02).name('RGB Aberration (彩虹...)').onChange(v => rgbShiftPass.uniforms['amount'].value = v);
+            postFolder.add(params, 'scanlines', 0.0, 1.0).name('Scanlines (扫描线)').onChange(v => filmPass.uniforms['sIntensity'].value = v);
+            postFolder.add(params, 'vignetteDarkness', 0.0, 3.0).name('Vignette (镜头暗角)').onChange(v => vignettePass.uniforms['darkness'].value = v);
+            postFolder.open();
+
+            // --- 新增：保存按钮，保存当前参数与相机初始位置 ---
+            const saveHelper = {
+                savePreset() {
+                    const preset = {
+                        params: { ...params },
+                        bgParams: { ...bgParams },
+                        interactionParams: { ...interactionParams },
+                        camera: {
+                            position: camera.position.toArray(),
+                            target: controls.target.toArray()
+                        }
+                    };
+                    try {
+                        localStorage.setItem('liquidMetalPreset', JSON.stringify(preset));
+                        console.log('Preset saved:', preset);
+                    } catch (e) {
+                        console.warn('Failed to save preset to localStorage', e);
+                    }
+                }
+            };
+            const sessionFolder = gui.addFolder('Session (会话)');
+            sessionFolder.add(saveHelper, 'savePreset').name('Save Preset');
+
+            // --- 新增：鼠标控制参数与状态 ---
+            const interactionParams = {
+                rotationSensitivity: 0.6,
+                verticalSensitivity: 0.6
+            };
+            window.interactionParams = interactionParams;
+            const mouseFolder = gui.addFolder('Mouse Control (鼠标控制)');
+            mouseFolder.add(interactionParams, 'rotationSensitivity', 0.0, 3.0).name('Rotate Sensitivity');
+            mouseFolder.add(interactionParams, 'verticalSensitivity', 0.0, 3.0).name('Tilt Sensitivity');
+            mouseFolder.open();
+
+            const mouseState = { x: 0, targetX: 0, y: 0, targetY: 0 };
+            window.addEventListener('mousemove', (event) => {
+                const normalizedX = (event.clientX / window.innerWidth) * 2 - 1; // -1 ~ 1
+                mouseState.targetX = normalizedX;
+                const normalizedY = (event.clientY / window.innerHeight) * 2 - 1; // -1 ~ 1
+                mouseState.targetY = normalizedY;
+            });
+
+            // 使用快捷键切换控制面板显示状态（按 G 键）
+            window.addEventListener('keydown', (event) => {
+                if (event.key === 'g' || event.key === 'G') {
+                    const isHidden = gui.domElement.style.display === 'none';
+                    gui.domElement.style.display = isHidden ? '' : 'none';
+                }
+            });
+
+            // 5. Animation Loop
+            const clock = new THREE.Clock();
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // 如果模型尚未加载完成，仅更新控制器与后期处理渲染
+                if (!geometry || !basePositions || !geometry.attributes || !geometry.attributes.position) {
+                    controls.update();
+                    composer.render();
+                    return;
+                }
+
+                // 固定时间轴，仅用于灯光和特效的缓慢变化（不再驱动模型外形）
+                const time = clock.getElapsedTime();
+
+                // 根据鼠标左右/上下移动，微微旋转模型
+                mouseState.x += (mouseState.targetX - mouseState.x) * 0.1; // 平滑插值
+                mouseState.y += (mouseState.targetY - mouseState.y) * 0.1;
+                if (mesh) {
+                    mesh.rotation.y = mouseState.x * interactionParams.rotationSensitivity;
+                    mesh.rotation.x = mouseState.y * interactionParams.verticalSensitivity;
+                }
+
+                // 让橘色暖光稍微游动，增加空间层次感（不改变模型形状）
+                warmLight.position.x = 5 + Math.sin(time * 0.5);
+                warmLight.position.y = -2 + Math.cos(time * 0.3);
+
+                // 让彩虹色散的角度跟随时间缓慢旋转
+                rgbShiftPass.uniforms['angle'].value = time * 0.5;
+
+                controls.update();
+                // 使用 composer 渲染带有辉光的场景
+                composer.render();
+            }
+
+            // Handle window resizing
+            window.addEventListener('resize', onWindowResize, false);
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                composer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            // Start animation
+            animate();
+        };
+    </script>
+</body>
+</html>
