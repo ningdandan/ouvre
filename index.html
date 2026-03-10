@@ -3,15 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ouvre - the only fan you need </title>
+
+    <title>ouvre fan | handmade in nyc | the only fan you need </title>
+
+    <meta name="description" content="Ouvre NYC creates folding fans inspired by New York nightlife, electronic music, rave culture, and summer parties. Explore statement fans, festival accessories, and the Ouvre Fan community on Instagram." />
+    <meta name="keywords" content="Ouvre NYC, ouvre nyc, ouvre fan, folding fan, rave fan, hand fan, festival fan, techno fan, club fan, New York rave accessories, electronic music accessories, festival accessories NYC, summer fan NYC, dance fan, performance fan, nightlife accessories, Berghain inspired, underground style, NYC summer, party accessories" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Ouvre NYC" />
+    <link rel="canonical" href="https://ouvre.nyc/" />
+  
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ouvre NYC | Folding Fans for Raves, Festivals, Clubs & Summer Events" />
+    <meta property="og:description" content="New York folding fans inspired by nightlife, electronic music, rave culture, and summer movement. Follow @ouvre.fan for drops, events, and community updates." />
+    <meta property="og:url" content="https://ouvre.nyc/" />
+    <meta property="og:site_name" content="Ouvre NYC" />
+  
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ouvre NYC | Folding Fans for Raves, Festivals, Clubs & Summer Events" />
+    <meta name="twitter:description" content="Folding fans from New York for raves, festivals, clubs, and summer nights. Follow @ouvre.fan." />
+  
     <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
     <link rel="icon" type="image/png" sizes="192x192" href="logo.png"> 
     <link rel="apple-touch-icon" href="logo.png">
     <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #000; /* 默认背景纯黑，避免移动端白边 */
+        }
+
         body { 
-            margin: 0; 
             overflow: hidden; 
-            /* 更新为参考图的深邃蓝黑色渐变 */
+            /* 深邃蓝黑色渐变，覆盖在黑色基础上 */
             background: radial-gradient(circle at 0% 100%, #0066ff 0%, #040a18 50%, #000000 100%);
             font-family: sans-serif;
             position: relative;
@@ -43,6 +68,51 @@
         /* 新增：强制控制面板处于绝对的最上层，防止被画布或噪点遮挡 */
         .dg.ac {
             z-index: 9999 !important;
+        }
+
+        /* 底部极简社交按钮 */
+        #socialBar {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .social-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)) padding-box,
+                linear-gradient(160deg,
+                    rgba(255, 255, 255, 0.45) 0%,
+                    rgba(200, 205, 215, 0.2) 30%,
+                    rgba(100, 105, 115, 0.25) 50%,
+                    rgba(170, 175, 185, 0.3) 70%,
+                    rgba(255, 255, 255, 0.35) 100%
+                ) border-box;
+            background-clip: padding-box, border-box;
+            background-origin: padding-box, border-box;
+            color: rgba(245, 245, 250, 0.95);
+            font-size: 11px;
+            text-decoration: none;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease, transform 0.1s ease, filter 0.2s ease;
+        }
+
+        .social-btn:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            filter: brightness(1.15);
         }
 
         #loading {
@@ -213,6 +283,33 @@
 </head>
 <body>
     <div id="loading">INITIALIZING 3D ENGINE...</div>
+    <div id="socialBar">
+        <a
+            class="social-btn"
+            href="https://www.instagram.com/ouvre.fan"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+        >
+            <!-- 简化版 Instagram 圆角方框图标 -->
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="17" cy="7" r="1" fill="currentColor"/>
+            </svg>
+        </a>
+        <a
+            class="social-btn"
+            href="mailto:hi@ouvre.nyc"
+            aria-label="Email"
+        >
+            <!-- 极简信封图标 -->
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="14" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M5 7l7 6 7-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+    </div>
     
     <script>
         window.onload = function() {
@@ -225,7 +322,9 @@
             // 移除纯色背景和雾效，以便显示CSS的渐变背景
 
             const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 15;
+            // 初始相机位置（无 preset 时使用；有 preset 时在下方被覆盖）
+            camera.position.set(0, 0, 15);
+            camera.lookAt(0, 0, 0);
 
             // 移除 alpha: true，不再依赖 CSS 透明画布，解决后期辉光导致的黑屏问题
             const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -240,11 +339,17 @@
             document.body.appendChild(renderer.domElement);
 
             const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.target.set(0, 0, 0);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
-            controls.autoRotate = false; // 修改：关闭自动旋转，让摄影机位置固定
+            controls.autoRotate = false;
             controls.autoRotateSpeed = 1.5;
-            controls.enablePan = true; // 开启右键/双指平移功能
+            controls.enablePan = true;
+
+            // 桌面：默认禁用相机，按 G 进入编辑模式才开启；移动端：始终允许手指触摸旋转/缩放
+            const isMobile = 'ontouchstart' in window || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            let editMode = false;
+            controls.enabled = isMobile;
 
             // 2. Cinematic Lighting (Simulating high-contrast environment)
             const ambientLight = new THREE.AmbientLight(0x051022, 1.5); // 深蓝色环境光
@@ -323,6 +428,11 @@
                 side: THREE.DoubleSide
             });
 
+            // 占位球体：在真实模型加载完成前先渲染一个高质量球，让用户更快看到画面
+            const placeholderGeometry = new THREE.SphereGeometry(2.0, 128, 128);
+            const placeholderMesh = new THREE.Mesh(placeholderGeometry, material);
+            scene.add(placeholderMesh);
+
             // 使用 OBJLoader 异步加载本地 ball.obj 替换原有球体
             let geometry = null;
             let mesh = null;
@@ -351,6 +461,12 @@
                             mesh = new THREE.Mesh(geometry, material);
                             mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
                             scene.add(mesh);
+
+                            // 模型准备好后移除占位球体
+                            if (placeholderMesh) {
+                                scene.remove(placeholderMesh);
+                                placeholderGeometry.dispose();
+                            }
 
                             const positionAttr = geometry.attributes.position;
                             basePositions = new Float32Array(positionAttr.array.length);
@@ -567,11 +683,17 @@
                 mouseState.targetY = normalizedY;
             });
 
-            // 使用快捷键切换控制面板显示状态（按 G 键）
+            // 使用快捷键切换控制面板显示状态与相机编辑模式（按 G 键）；移动端仅切换面板，相机始终可触摸操作
             window.addEventListener('keydown', (event) => {
                 if (event.key === 'g' || event.key === 'G') {
                     const isHidden = gui.domElement.style.display === 'none';
-                    gui.domElement.style.display = isHidden ? '' : 'none';
+                    const willShow = isHidden;
+                    gui.domElement.style.display = willShow ? '' : 'none';
+
+                    if (!isMobile) {
+                        editMode = willShow;
+                        controls.enabled = editMode;
+                    }
                 }
             });
 
