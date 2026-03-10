@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liquid Metal VJ Loop</title>
+    <title>ouvre - the only fan you need </title>
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="logo.png"> 
+    <link rel="apple-touch-icon" href="logo.png">
     <style>
         body { 
             margin: 0; 
@@ -386,6 +389,36 @@
                 noise: 0.055
             };
 
+            // 鼠标旋转控制参数
+            const interactionParams = {
+                rotationSensitivity: 0.6,
+                verticalSensitivity: 0.6
+            };
+
+            // 启动时尝试从 localStorage 读取上次保存的预设
+            try {
+                const stored = localStorage.getItem('liquidMetalPreset');
+                if (stored) {
+                    const preset = JSON.parse(stored);
+                    if (preset.params) Object.assign(params, preset.params);
+                    if (preset.bgParams) Object.assign(bgParams, preset.bgParams);
+                    if (preset.interactionParams) Object.assign(interactionParams, preset.interactionParams);
+                    if (preset.camera) {
+                        if (Array.isArray(preset.camera.position)) {
+                            camera.position.fromArray(preset.camera.position);
+                        }
+                        if (Array.isArray(preset.camera.target)) {
+                            controls.target.fromArray(preset.camera.target);
+                            controls.update();
+                        }
+                    }
+                    renderer.toneMappingExposure = params.exposure;
+                    material.envMapIntensity = params.envIntensity;
+                }
+            } catch (e) {
+                console.warn('Failed to load preset from localStorage', e);
+            }
+
             // 暴露到 window，方便在 DevTools 中调试
             window.params = params;
             window.bgParams = bgParams;
@@ -393,8 +426,6 @@
             const gui = new dat.GUI({ width: 320 });
             gui.close();
             gui.domElement.style.display = 'none'; // 默认隐藏控制面板，按 G 键呼出
-            gui.close();
-            gui.domElement.style.display = 'none'; // 默认隐藏控制面板
 
             // --- 新增：背景与噪点控制面板 ---
             const bgFolder = gui.addFolder('Background (背景 & 噪点)');
@@ -470,8 +501,8 @@
             postFolder.add(params, 'vignetteDarkness', 0.0, 3.0).name('Vignette (镜头暗角)').onChange(v => vignettePass.uniforms['darkness'].value = v);
             postFolder.open();
 
-            // --- 新增：保存按钮，保存当前参数与相机初始位置 ---
-            const saveHelper = {
+            // --- 新增：保存 / 读取按钮，保存当前参数与相机初始位置 ---
+            const presetHelper = {
                 savePreset() {
                     const preset = {
                         params: { ...params },
@@ -488,16 +519,40 @@
                     } catch (e) {
                         console.warn('Failed to save preset to localStorage', e);
                     }
+                },
+                loadPreset() {
+                    try {
+                        const stored = localStorage.getItem('liquidMetalPreset');
+                        if (!stored) return;
+                        const preset = JSON.parse(stored);
+                        if (preset.params) Object.assign(params, preset.params);
+                        if (preset.bgParams) Object.assign(bgParams, preset.bgParams);
+                        if (preset.interactionParams) Object.assign(interactionParams, preset.interactionParams);
+                        if (preset.camera) {
+                            if (Array.isArray(preset.camera.position)) {
+                                camera.position.fromArray(preset.camera.position);
+                            }
+                            if (Array.isArray(preset.camera.target)) {
+                                controls.target.fromArray(preset.camera.target);
+                                controls.update();
+                            }
+                        }
+                        // 应用到渲染与背景
+                        renderer.toneMappingExposure = params.exposure;
+                        material.envMapIntensity = params.envIntensity;
+                        updateBackground();
+                        document.body.style.setProperty('--noise-opacity', bgParams.noise);
+                        console.log('Preset loaded:', preset);
+                    } catch (e) {
+                        console.warn('Failed to load preset from localStorage', e);
+                    }
                 }
             };
             const sessionFolder = gui.addFolder('Session (会话)');
-            sessionFolder.add(saveHelper, 'savePreset').name('Save Preset');
+            sessionFolder.add(presetHelper, 'savePreset').name('Save Preset');
+            sessionFolder.add(presetHelper, 'loadPreset').name('Load Preset');
 
             // --- 新增：鼠标控制参数与状态 ---
-            const interactionParams = {
-                rotationSensitivity: 0.6,
-                verticalSensitivity: 0.6
-            };
             window.interactionParams = interactionParams;
             const mouseFolder = gui.addFolder('Mouse Control (鼠标控制)');
             mouseFolder.add(interactionParams, 'rotationSensitivity', 0.0, 3.0).name('Rotate Sensitivity');
