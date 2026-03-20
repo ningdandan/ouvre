@@ -516,8 +516,9 @@ section {
     margin-top: 12px !important;
 }
 
-/* Acquire CTA: same iridescent glitch layers as landing hero (white label + holo trails) */
-#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn {
+/* Acquire CTA + contact submit: outline, hollow, jitter + holo glitch layers */
+#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn,
+#contactForm button.glitch-outline-btn {
     background: transparent;
     border: 1px solid var(--border);
     color: #fff;
@@ -535,12 +536,22 @@ section {
     animation: hero-title-jitter 0.46s steps(1, end) infinite;
 }
 
-#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn:hover {
+#contactForm button.glitch-outline-btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: var(--space-sm);
+}
+
+#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn:hover,
+#contactForm button.glitch-outline-btn:hover {
     border-color: var(--border-hover);
 }
 
 #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::before,
-#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after {
+#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after,
+#contactForm button.glitch-outline-btn::before,
+#contactForm button.glitch-outline-btn::after {
     content: attr(data-text);
     position: absolute;
     inset: 0;
@@ -559,7 +570,8 @@ section {
     color: transparent;
 }
 
-#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::before {
+#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::before,
+#contactForm button.glitch-outline-btn::before {
     background-image: linear-gradient(
         110deg,
         #ff2d95 0%,
@@ -577,7 +589,8 @@ section {
         hero-title-holo-shift 5.5s linear infinite;
 }
 
-#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after {
+#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after,
+#contactForm button.glitch-outline-btn::after {
     background-image: linear-gradient(
         -125deg,
         #06b6d4 0%,
@@ -595,13 +608,16 @@ section {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn {
+    #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn,
+    #contactForm button.glitch-outline-btn {
         animation: none;
         text-shadow: none;
     }
 
     #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::before,
-    #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after {
+    #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after,
+    #contactForm button.glitch-outline-btn::before,
+    #contactForm button.glitch-outline-btn::after {
         content: none;
         animation: none;
     }
@@ -634,6 +650,27 @@ section {
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
+}
+
+.catalog-coming-soon {
+    margin-top: var(--space-lg);
+    padding: clamp(var(--space-xl), 14vw, 140px) var(--space-md);
+    text-align: center;
+    border: 1px solid var(--border);
+    background: #050505;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.catalog-coming-soon__title {
+    font-family: var(--font-title);
+    font-size: clamp(2rem, 7vw, 3.25rem);
+    font-weight: 100;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    margin: 0;
 }
 
 .catalog-item {
@@ -701,6 +738,21 @@ footer {
     gap: var(--space-md);
 }
 
+.footer-grid__brand {
+    grid-column: span 2;
+}
+
+.footer-brand-title {
+    font-size: 2rem;
+    margin-bottom: var(--space-sm);
+}
+
+.footer-meta {
+    margin-top: var(--space-xl);
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-sm);
+}
+
 .f-col { display: flex; flex-direction: column; gap: var(--space-sm); }
 .f-col input {
     background: transparent;
@@ -713,7 +765,7 @@ footer {
     outline: none;
 }
 .f-col input:focus { border-bottom-color: var(--fg); }
-.f-col button {
+.f-col button:not(.glitch-outline-btn) {
     background: var(--fg);
     color: var(--bg);
     border: none;
@@ -725,7 +777,45 @@ footer {
     margin-top: var(--space-sm);
     transition: opacity 0.2s;
 }
-.f-col button:hover { opacity: 0.8; }
+.f-col button:not(.glitch-outline-btn):hover { opacity: 0.8; }
+
+@media (max-width: 768px) {
+    footer {
+        padding: var(--space-lg) 0 var(--space-md);
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+    }
+
+    .footer-grid__brand {
+        grid-column: span 1;
+    }
+
+    .footer-brand-title {
+        font-size: clamp(1.35rem, 6vw, 2rem);
+    }
+
+    .footer-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+        margin-top: var(--space-lg);
+    }
+
+    .footer-meta .t-label {
+        max-width: 100%;
+        line-height: 1.5;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-meta .t-label:first-child {
+        font-size: 9px;
+        letter-spacing: 0.06em;
+    }
+}
 
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 .uppercase { text-transform: uppercase; }

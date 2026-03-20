@@ -175,6 +175,7 @@
                 <!-- <div class="t-label" vid="117">Artists: 12</div> -->
             </div>
 
+            <!-- Artist grid paused — restore when archive is live
             <div class="controls" vid="118">
                 <div class="filter-group" vid="119">
                     <button class="filter-btn active" vid="120">All</button>
@@ -195,12 +196,18 @@
             <div style="text-align:center; margin-top:var(--space-lg);" vid="129">
                  <button style="background:transparent; border:none; color:var(--muted); font-family:var(--font-mono); font-size:10px; text-transform:uppercase; cursor:pointer; letter-spacing:0.1em; border-bottom:1px solid var(--border); padding-bottom:4px;" vid="130">Load Next Sequence ...</button>
             </div>
+            -->
+
+            <div class="catalog-coming-soon" aria-live="polite">
+                <span class="t-label">Status</span>
+                <p class="catalog-coming-soon__title">Coming soon</p>
+            </div>
         </section>
 
         <footer vid="131">
             <div class="footer-grid" vid="132">
-                <div class="f-col" style="grid-column: span 2;" vid="133">
-                    <h2 class="t-hero-sub" style="font-size: 2rem; margin-bottom:var(--space-sm);" vid="134">ouvre.nyc</h2>
+                <div class="f-col footer-grid__brand" vid="133">
+                    <h2 class="t-hero-sub footer-brand-title" vid="134">ouvre.nyc</h2>
                 </div>
                 <div class="f-col" vid="136">
                     <span class="t-label" vid="137">Network</span>
@@ -214,12 +221,12 @@
                         <input type="text" id="contactName" name="name" placeholder="NAME" required>
                         <input type="email" id="contactEmail" name="email" placeholder="EMAIL" required>
                         <textarea id="contactMessage" name="message" placeholder="MESSAGE" rows="4" required style="background: transparent; border: 1px solid var(--border); padding: var(--space-xs) var(--space-sm); color: var(--fg); font-family: var(--font-mono); font-size: 11px; outline: none; resize: vertical; min-height: 72px;"></textarea>
-                        <button type="submit">Send Message</button>
+                        <button type="submit" class="glitch-outline-btn" data-text="Send Message -&gt;">Send Message -&gt;</button>
                         <span id="contactFormStatus" class="t-label"></span>
                     </form>
                 </div>
             </div>
-            <div class="flex-between w-100" style="margin-top:var(--space-xl); border-top:1px solid var(--border); padding-top:var(--space-sm);" vid="145">
+            <div class="footer-meta flex-between w-100" vid="145">
                 <span class="t-label" vid="146">© 2026 ouvre llc ALL RIGHTS RESERVED.</span>
                 <span class="t-label" vid="147">SYSTEM V.1.0.4</span>
             </div>
