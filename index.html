@@ -1,750 +1,229 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">ouvre - artist led fan house in Bushwick</title>
+    
 
-    <title>ouvre fan | handmade in nyc | the only fan you need </title>
-
-    <meta name="description" content="Ouvre NYC creates folding fans inspired by New York nightlife, electronic music, rave culture, and summer parties. Explore statement fans, festival accessories, and the Ouvre Fan community on Instagram." />
-    <meta name="keywords" content="Ouvre NYC, ouvre nyc, ouvre fan, folding fan, rave fan, hand fan, festival fan, techno fan, club fan, New York rave accessories, electronic music accessories, festival accessories NYC, summer fan NYC, dance fan, performance fan, nightlife accessories, Berghain inspired, underground style, NYC summer, party accessories" />
+    <meta name="description" content="ouvre nyc is an artist-led fan house based in Bushwick. We make sculptural fans for electronic nights—for dancing, for performance, for the way a body looks when it moves." />
+    <meta name="keywords" content="ouvre nyc, ouvre nyc, ouvre fan, folding fan, rave fan, hand fan, festival fan, techno fan, club fan, New York rave accessories, electronic music accessories, festival accessories NYC, summer fan NYC, dance fan, performance fan, nightlife accessories, Berghain inspired, underground style, NYC summer, party accessories" />
     <meta name="robots" content="index, follow" />
-    <meta name="author" content="Ouvre NYC" />
+    <meta name="author" content="ouvre nyc" />
     <link rel="canonical" href="https://ouvre.nyc/" />
   
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Ouvre NYC | Folding Fans for Raves, Festivals, Clubs & Summer Events" />
-    <meta property="og:description" content="New York folding fans inspired by nightlife, electronic music, rave culture, and summer movement. Follow @ouvre.fan for drops, events, and community updates." />
+    <meta property="og:title" content="ouvre nyc | artist led fan house in Bushwick" />
+    <meta property="og:description" content="ouvre nyc is an artist-led fan house based in Bushwick. We make sculptural fans for electronic nights—for dancing, for performance, for the way a body looks when it moves." />
     <meta property="og:url" content="https://ouvre.nyc/" />
-    <meta property="og:site_name" content="Ouvre NYC" />
+    <meta property="og:site_name" content="ouvre nyc" />
   
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Ouvre NYC | Folding Fans for Raves, Festivals, Clubs & Summer Events" />
-    <meta name="twitter:description" content="Folding fans from New York for raves, festivals, clubs, and summer nights. Follow @ouvre.fan." />
+    <meta name="twitter:title" content="ouvre nyc | artist led fan house in Bushwick" />
+    <meta name="twitter:description" content="ouvre nyc is an artist-led fan house based in Bushwick. We make sculptural fans for electronic nights—for dancing, for performance, for the way a body looks when it moves." />
   
     <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
     <link rel="icon" type="image/png" sizes="192x192" href="logo.png"> 
     <link rel="apple-touch-icon" href="logo.png">
-    <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background: #000; /* 默认背景纯黑，避免移动端白边 */
-        }
 
-        body { 
-            overflow: hidden; 
-            /* 深邃蓝黑色渐变，覆盖在黑色基础上 */
-            background: radial-gradient(circle at 0% 100%, #0066ff 0%, #040a18 50%, #000000 100%);
-            font-family: sans-serif;
-            position: relative;
-            --noise-opacity: 0.08; /* 控制颗粒强度的变量 */
-        }
-        
-        /* 胶片颗粒噪点层 (覆盖在整个画面上方) */
-        body::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none; 
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: var(--noise-opacity);
-            z-index: 10;
-        }
 
-        canvas { 
-            display: block; 
-            width: 100vw; 
-            height: 100vh; 
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* 新增：强制控制面板处于绝对的最上层，防止被画布或噪点遮挡 */
-        .dg.ac {
-            z-index: 9999 !important;
-        }
 
-        /* 底部极简社交按钮 */
-        #socialBar {
-            position: fixed;
-            bottom: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 20;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        .social-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 999px;
-            border: 1px solid transparent;
-            background:
-                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)) padding-box,
-                linear-gradient(160deg,
-                    rgba(255, 255, 255, 0.45) 0%,
-                    rgba(200, 205, 215, 0.2) 30%,
-                    rgba(100, 105, 115, 0.25) 50%,
-                    rgba(170, 175, 185, 0.3) 70%,
-                    rgba(255, 255, 255, 0.35) 100%
-                ) border-box;
-            background-clip: padding-box, border-box;
-            background-origin: padding-box, border-box;
-            color: rgba(245, 245, 250, 0.95);
-            font-size: 11px;
-            text-decoration: none;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: color 0.2s ease, transform 0.1s ease, filter 0.2s ease;
-        }
-
-        .social-btn:hover {
-            color: #fff;
-            transform: translateY(-1px);
-            filter: brightness(1.15);
-        }
-
-        #loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-            z-index: 20;
-        }
-
-        /* 新增：侧边栏抽屉容器 */
-        #audioWrapper {
-            position: absolute;
-            left: 0;
-            bottom: 40px;
-            /* 利用 transform 把自身宽度隐藏到屏幕左侧，只留下 28px 的小把手 */
-            transform: translateX(calc(-100% + 28px));
-            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-        }
-
-        /* 鼠标悬浮时，抽屉完全滑出 */
-        #audioWrapper:hover {
-            transform: translateX(0);
-        }
-
-        /* 抽屉弹出的小把手 */
-        #audioTab {
-            width: 28px;
-            height: 70px;
-            background: rgba(4, 10, 24, 0.65);
-            border: 1px solid rgba(0, 102, 255, 0.3);
-            border-left: none;
-            border-radius: 0 8px 8px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #00aaff;
-            cursor: pointer;
-            backdrop-filter: blur(12px);
-            font-size: 11px;
-            font-family: monospace;
-            writing-mode: vertical-rl; /* 文字竖排 */
-            letter-spacing: 2px;
-            transition: all 0.3s ease;
-        }
-
-        /* 录音状态下的把手样式 */
-        #audioWrapper.recording #audioTab {
-            color: #ff0055;
-            border-color: #ff0055;
-            text-shadow: 0 0 8px #ff0055;
-            background: rgba(255, 0, 85, 0.1);
-        }
-
-        /* 修改原本的音频面板：移除绝对定位，适应 Flex 布局 */
-        #audioPanel {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            padding: 12px 24px;
-            background: rgba(4, 10, 24, 0.65);
-            border: 1px solid rgba(0, 102, 255, 0.3);
-            border-radius: 0 12px 12px 0; /* 左边不圆角，贴合边缘 */
-            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 102, 255, 0.1);
-            backdrop-filter: blur(12px);
-            font-family: sans-serif;
-        }
-
-        #micToggle {
-            background: rgba(0, 85, 255, 0.2);
-            border: 1px solid #0055ff;
-            color: #00aaff;
-            padding: 10px 18px;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 13px;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        #micToggle:hover {
-            background: rgba(0, 85, 255, 0.4);
-            color: #fff;
-            box-shadow: 0 0 15px rgba(0, 85, 255, 0.5);
-        }
-
-        #micToggle.active {
-            border-color: #ff0055;
-            color: #ff0055;
-            background: rgba(255, 0, 85, 0.15);
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
-        }
-
-        #visualizer {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-            height: 36px;
-        }
-
-        .bar-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .bar-bg {
-            width: 8px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: flex-end;
-        }
-
-        .bar-fill {
-            width: 100%;
-            height: 0%; /* 初始高度0，由JS控制 */
-            border-radius: 4px;
-            transition: height 0.05s linear; /* 略微平滑以防闪烁 */
-        }
-
-        #bar-bass { background: linear-gradient(to top, #ff0055, #ffaa00); }
-        #bar-mid { background: linear-gradient(to top, #00ffaa, #00aaff); }
-        #bar-treble { background: linear-gradient(to top, #0055ff, #aa00ff); }
-        /* 新增：代表动画引擎转速的特殊颜色 (白/黄渐变) */
-        #bar-speed { background: linear-gradient(to top, #ffffff, #ffee00); }
-
-        .bar-label {
-            font-size: 9px;
-            color: rgba(255, 255, 255, 0.5);
-            font-family: monospace;
-        }
-    </style>
-    <!-- Import Three.js and dependencies -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <!-- 引入辉光后期处理所需的库 -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-    <!-- 新增：炫光色散、胶片扫描线、暗角镜头特效库 -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/RGBShiftShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/VignetteShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/FilmPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/FilmShader.js"></script>
-    <!-- 新增：OBJ 模型加载器 -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
-</head>
-<body>
-    <div id="loading">INITIALIZING 3D ENGINE...</div>
-    <div id="socialBar">
-        <a
-            class="social-btn"
-            href="https://www.instagram.com/ouvre.fan"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram"
-        >
-            <!-- 简化版 Instagram 圆角方框图标 -->
-            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="3" y="3" width="18" height="18" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="1.6"/>
-                <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
-                <circle cx="17" cy="7" r="1" fill="currentColor"/>
-            </svg>
-        </a>
-        <a
-            class="social-btn"
-            href="mailto:hi@ouvre.nyc"
-            aria-label="Email"
-        >
-            <!-- 极简信封图标 -->
-            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="3" y="5" width="18" height="14" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
-                <path d="M5 7l7 6 7-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </a>
-    </div>
     
-    <script>
-        window.onload = function() {
-            // Remove loading text
-            document.getElementById('loading').style.opacity = '0';
-            setTimeout(() => document.getElementById('loading').remove(), 500);
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="5">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@100;300;400&amp;display=swap" rel="stylesheet" vid="7">
+    <link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" vid="8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script defer src="index.js"></script>
 
-            // 1. Scene Setup
-            const scene = new THREE.Scene();
-            // 移除纯色背景和雾效，以便显示CSS的渐变背景
+    <style vid="9">@import url("index.css"); </style>
+</head>
+<body vid="10">
 
-            const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-            // 初始相机位置（无 preset 时使用；有 preset 时在下方被覆盖）
-            camera.position.set(0, 0, 15);
-            camera.lookAt(0, 0, 0);
+    <div id="canvas-container" vid="11"></div>
+    <!-- Black veil + video above point cloud; scroll sync in index.js -->
+    <div id="point-cloud-veil" class="point-cloud-veil" aria-hidden="true"></div>
+    <div id="scroll-video-stage" class="scroll-video-stage" aria-hidden="true">
+        <video id="scroll-bg-video" src="video.mp4" muted loop playsinline autoplay></video>
+    </div>
+    <!-- Background noise overlay (film grain / dust) -->
+    <canvas id="glcanvas"></canvas>
 
-            // 移除 alpha: true，不再依赖 CSS 透明画布，解决后期辉光导致的黑屏问题
-            const renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimize for high-DPI
+    <!-- <nav vid="12">
+        <div class="nav-link" vid="13">
+            <span vid="14">SYS.ID</span>
+            <div vid="15">ouvre.nyc</div>
+        </div>
+        <div class="nav-links" vid="16">
+            <a href="#landing" class="nav-link" vid="17"><span vid="18">01</span>Home</a>
+            <a href="#drops" class="nav-link" vid="19"><span vid="20">02</span>Drops</a>
+            <a href="#catalog" class="nav-link" vid="21"><span vid="22">03</span>Artist Archive</a>
+            <a href="#" class="nav-link" vid="23"><span vid="24">04</span>Terminal (0)</a>
+        </div>
+    </nav> -->
+
+    <div class="container" vid="25">
+        
+        <section id="landing" vid="26">
+            <div class="hero-data-corners" vid="27">
+                <!-- <div class="data-block" vid="28">
+                    <span class="t-label" vid="29">Protocol</span>
+                    <span class="t-data" vid="30">GEN-SEQ-902</span>
+                    <span class="t-data" vid="31">TCTAGCATGC</span>
+                </div>
+                <div class="data-block text-right" vid="32">
+                    <span class="t-label" vid="33">Status</span>
+                    <span class="t-data" vid="34">CULTIVATING</span>
+                    <span class="t-data text-right" id="clock" vid="35">00:00:00</span>
+                </div> -->
+            </div>
+
+            <div class="hero-title-wrapper" vid="36">
+                <h1 class="t-hero" vid="37" data-text="ouvre">ouvre</h1>
+                <span class="t-body hero-sub-glitch" vid="39" data-text="the only fan you need">t  h e    o n l  y   f a n   y o  u  n ee  d</span>
+            </div>
             
-            // Enable physical accurate lighting and tone mapping for HDRI
-            renderer.outputEncoding = THREE.sRGBEncoding;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.4; // 默认曝光与控制面板一致
-            
-            document.body.appendChild(renderer.domElement);
+            <div class="landing-system-banner-wrap" vid="40">
+                <div class="system-banner" vid="41">
+                    <span class="t-body" vid="44">Ouvre is an artist-led fan house based in Bushwick. We make sculptural fans for electronic nights—for dancing, for performance, for the way a body looks when it moves.</span>
+                </div>
+            </div>
+        </section>
 
-            const controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.target.set(0, 0, 0);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.autoRotate = false;
-            controls.autoRotateSpeed = 1.5;
-            controls.enablePan = true;
+        
+        <section id="drops" vid="47">
+            <div class="section-header" vid="48">
+                <div vid="49">
+                    <h2 class="t-hero-sub" style="font-size: 2rem;" vid="51">Latest Drops</h2>
+                </div>
+                <div class="t-label" vid="52">Batch: 001</div>
+            </div>
 
-            // 桌面：默认禁用相机，按 G 进入编辑模式才开启；移动端：始终允许手指触摸旋转/缩放
-            const isMobile = 'ontouchstart' in window || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            let editMode = false;
-            controls.enabled = isMobile;
-
-            // 2. Cinematic Lighting (Simulating high-contrast environment)
-            const ambientLight = new THREE.AmbientLight(0x051022, 1.5); // 深蓝色环境光
-            scene.add(ambientLight);
-
-            // 主光源：偏冷的亮白色
-            const mainLight = new THREE.DirectionalLight(0xeef4ff, 1.5); 
-            mainLight.position.set(2, 5, 5);
-            scene.add(mainLight);
-
-            // 暖色高光：还原参考图中的橘金色反光 (非常关键)
-            const warmLight = new THREE.DirectionalLight(0xff7722, 3.5); 
-            warmLight.position.set(5, -2, 3);
-            scene.add(warmLight);
-
-            // 强烈的青蓝色补光：还原左下角的明亮蓝色调
-            const cyanLight = new THREE.PointLight(0x00aaff, 4.0, 50); 
-            cyanLight.position.set(-4, -4, 2);
-            scene.add(cyanLight);
-            
-            // 顶部深蓝光补光
-            const blueLight = new THREE.PointLight(0x1133ff, 3.0, 50); 
-            blueLight.position.set(0, 5, -5);
-            scene.add(blueLight);
-
-            // --- HDRI / Global Illumination Setup ---
-            const textureLoader = new THREE.TextureLoader();
-            // Note: If running on a local server, change this to your 'image_3eeffa.jpg' path!
-            const hdriUrl = 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/2294472375_24a3b8ef46_o.jpg'; 
-            
-            textureLoader.load(hdriUrl, function(texture) {
-                texture.mapping = THREE.EquirectangularReflectionMapping;
-                texture.encoding = THREE.sRGBEncoding;
+            <div class="drop-cards" vid="53">
                 
-                // 仅应用为全局光照（反射和环境光），不再设为背景
-                scene.environment = texture;
-            });
+                <div class="bracket-box drop-card" vid="54">
+                    <div class="bb-inner" vid="55"></div>
+                    <div class="drop-visual" vid="56">
+                        
+                        <img src="src/cover_1.jpg" alt="Macro texture" vid="57">
+                        <div class="drop-ui-overlay" vid="58">
+                            <div class="flex-between w-100" vid="59">
+                                <span class="t-label" vid="60">Subject: 001</span>
+                                <div class="crosshair" style="top:10px; right:10px;" vid="61"></div>
+                            </div>
+                            <div class="flex-between w-100" vid="62">
+                                <span class="t-data" style="background:var(--bg); padding:2px 4px;" vid="63">LIVE_RESIN_FOCUS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="drop-info" vid="64">
+                        <div class="info-col" vid="65">
+                            <h3 vid="66">Babylon</h3>
+                            <span class="t-label" vid="67">STRUCTURE HELD IN BLACk</span>
+                            <p class="t-body" style="font-size: 12px; margin-top: 8px;" vid="68">Built around structure, Babylon is tighter, sharper, and more controlled. Its silhouette opens with the precision of a system — clean, deliberate, and percussive.</p>
+                        </div>
+                        <div class="info-col" vid="69">
+                            <div class="info-row" vid="70"><span class="t-label" vid="71">Weight</span><span class="t-data" vid="72">29 grams</span></div>
+                            <div class="info-row" vid="73"><span class="t-label" vid="74">Material</span><span class="t-data" vid="75">Bamboo, canvas</span></div>
+                            <div class="info-row" vid="76"><span class="t-label" vid="77">Feel</span><span class="t-data" vid="78">Tense, precise</span></div>
+                            <div class="info-row" vid="79"><span class="t-label" vid="80">Finish</span><span class="t-data" vid="81">Smoked black</span></div>
+                            <button type="button" class="drop-acquire-btn" data-text="Acquire Edition -&gt;" data-price="32" data-edition-id="babylon-001" vid="82">Acquire Edition -&gt;</button>
+                        </div>
+                    </div>
+                </div>
 
-            // --- 移除空间漂浮的烟尘粒子 ---
-
-            // --- 设置辉光后期处理 (Glow/Bloom Post-Processing) ---
-            const renderScene = new THREE.RenderPass(scene, camera);
-            
-            // 参数更新：分辨率, 发光强度 1.5, 辉光半径 0.8, 阈值 0.2
-            const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.8, 0.2);
-            
-            const composer = new THREE.EffectComposer(renderer);
-            composer.addPass(renderScene);
-            composer.addPass(bloomPass);
-
-            // --- 新增：彩虹色散特效 (Chromatic Aberration) ---
-            const rgbShiftPass = new THREE.ShaderPass(THREE.RGBShiftShader);
-            rgbShiftPass.uniforms['amount'].value = 0.0; // 根据截图归零
-            rgbShiftPass.uniforms['angle'].value = Math.PI * 0.25; // 色散角度
-            composer.addPass(rgbShiftPass);
-
-            // --- 新增：赛博朋克扫描线特效 (Scanlines) ---
-            const filmPass = new THREE.FilmPass(0.0, 0.5, 800, false); // 根据截图更新线强度为 0.5
-            // noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale
-            composer.addPass(filmPass);
-
-            // --- 新增：镜头暗角特效 (Vignette) ---
-            const vignettePass = new THREE.ShaderPass(THREE.VignetteShader);
-            vignettePass.uniforms['offset'].value = 1.0;
-            vignettePass.uniforms['darkness'].value = 2.0; // 根据截图更新为 2.0
-            composer.addPass(vignettePass);
-
-            // 3. Object & Material (Chrome-plated liquid metal)
-            const material = new THREE.MeshPhysicalMaterial({
-                color: 0x2f2c2c,
-                metalness: 0.9,
-                roughness: 0.0,
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.258,
-                envMapIntensity: 4.2,
-                side: THREE.DoubleSide
-            });
-
-            // 占位球体：在真实模型加载完成前先渲染一个高质量球，让用户更快看到画面
-            const placeholderGeometry = new THREE.SphereGeometry(2.0, 128, 128);
-            const placeholderMesh = new THREE.Mesh(placeholderGeometry, material);
-            scene.add(placeholderMesh);
-
-            // 使用 OBJLoader 异步加载本地 ball.obj 替换原有球体
-            let geometry = null;
-            let mesh = null;
-            let basePositions = null;
-            let vertexCount = 0;
-
-            const objLoader = new THREE.OBJLoader();
-            objLoader.load(
-                'ball.obj',
-                function (obj) {
-                    let foundMesh = false;
-                    obj.traverse(child => {
-                        if (foundMesh) return;
-                        if (child.isMesh && child.geometry && child.geometry.attributes && child.geometry.attributes.position) {
-                            foundMesh = true;
-                            geometry = child.geometry;
-
-                            // 将几何体居中并基于包围球半径进行缩放
-                            geometry.computeBoundingSphere();
-                            const radius = geometry.boundingSphere ? geometry.boundingSphere.radius : 1;
-                            geometry.center();
-
-                            const targetRadius = 2.0; // 与原始场景视觉大小相近
-                            const scaleFactor = targetRadius / (radius || 1);
-
-                            mesh = new THREE.Mesh(geometry, material);
-                            mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
-                            scene.add(mesh);
-
-                            // 模型准备好后移除占位球体
-                            if (placeholderMesh) {
-                                scene.remove(placeholderMesh);
-                                placeholderGeometry.dispose();
-                            }
-
-                            const positionAttr = geometry.attributes.position;
-                            basePositions = new Float32Array(positionAttr.array.length);
-                            basePositions.set(positionAttr.array);
-                            vertexCount = positionAttr.count;
-                        }
-                    });
-
-                    if (!foundMesh) {
-                        console.error('OBJ file loaded, but no mesh with position attribute was found.');
-                    }
-                },
-                undefined,
-                function (err) {
-                    console.error('Failed to load ball.obj:', err);
-                }
-            );
-
-            // 4. GUI Controls - 仅保留背景、材质、环境光与后期特效，不再控制模型外形
-            const params = {
-                exposure: 1.4,
-                envIntensity: 4.2,
-                bloomStrength: 1.5,
-                bloomRadius: 0.46,
-                bloomThreshold: 0.15,
-                rgbShiftAmt: 0.0,
-                scanlines: 0.5,
-                vignetteDarkness: 2.0
-            };
-
-            const bgParams = {
-                type: 'Gradient',
-                color1: '#384fff',
-                colorMid: '#5d657a',
-                color2: '#000000',
-                noise: 0.055
-            };
-
-            // 鼠标旋转控制参数
-            const interactionParams = {
-                rotationSensitivity: 0.6,
-                verticalSensitivity: 0.6
-            };
-
-            // 启动时尝试从 localStorage 读取上次保存的预设
-            try {
-                const stored = localStorage.getItem('liquidMetalPreset');
-                if (stored) {
-                    const preset = JSON.parse(stored);
-                    if (preset.params) Object.assign(params, preset.params);
-                    if (preset.bgParams) Object.assign(bgParams, preset.bgParams);
-                    if (preset.interactionParams) Object.assign(interactionParams, preset.interactionParams);
-                    if (preset.camera) {
-                        if (Array.isArray(preset.camera.position)) {
-                            camera.position.fromArray(preset.camera.position);
-                        }
-                        if (Array.isArray(preset.camera.target)) {
-                            controls.target.fromArray(preset.camera.target);
-                            controls.update();
-                        }
-                    }
-                    renderer.toneMappingExposure = params.exposure;
-                    material.envMapIntensity = params.envIntensity;
-                }
-            } catch (e) {
-                console.warn('Failed to load preset from localStorage', e);
-            }
-
-            // 暴露到 window，方便在 DevTools 中调试
-            window.params = params;
-            window.bgParams = bgParams;
-
-            const gui = new dat.GUI({ width: 320 });
-            gui.close();
-            gui.domElement.style.display = 'none'; // 默认隐藏控制面板，按 G 键呼出
-
-            // --- 新增：背景与噪点控制面板 ---
-            const bgFolder = gui.addFolder('Background (背景 & 噪点)');
-            
-            function updateBackground() {
-                // 使用 Canvas 动态绘制背景贴图，并作为 3D 场景的背景
-                // 彻底解决 EffectComposer 后期处理导致的透明度丢失问题
-                const size = 512;
-                const canvas = document.createElement('canvas');
-                canvas.width = size;
-                canvas.height = size;
-                const ctx = canvas.getContext('2d');
-
-                if (bgParams.type === 'Solid') {
-                    ctx.fillStyle = bgParams.color2;
-                    ctx.fillRect(0, 0, size, size);
-                } else {
-                    // 在画布左下角绘制径向渐变
-                    const gradient = ctx.createRadialGradient(0, size, 0, 0, size, size * 1.5);
-                    gradient.addColorStop(0, bgParams.color1);
-                    gradient.addColorStop(0.5, bgParams.colorMid);
-                    gradient.addColorStop(1, bgParams.color2);
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(0, 0, size, size);
-                }
-
-                const texture = new THREE.CanvasTexture(canvas);
-                texture.encoding = THREE.sRGBEncoding; // 匹配渲染器的色彩空间
                 
-                // 清理旧背景并应用新背景
-                if (scene.background && scene.background.dispose) {
-                    scene.background.dispose();
-                }
-                scene.background = texture;
-            }
+                <div class="bracket-box drop-card" vid="83">
+                    <div class="bb-inner" vid="84"></div>
+                    <div class="drop-visual" vid="85">
+                        
+                        <img src="src/cover_2.jpg" alt="Dark botanical texture" vid="86">
+                        <div class="drop-ui-overlay" vid="87">
+                            <div class="flex-between w-100" vid="88">
+                                <span class="t-label" vid="89">Subject: 002</span>
+                                <div class="crosshair" style="top:10px; right:10px;" vid="90"></div>
+                            </div>
+                            <div class="flex-between w-100" vid="91">
+                                <span class="t-data" style="background:var(--bg); padding:2px 4px;" vid="92">ANTHOCYANIN_RICH</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="drop-info" vid="93">
+                        <div class="info-col" vid="94">
+                            <h3 vid="95">L'Ambiguité</h3>
+                            <span class="t-label" vid="96">Liquid interference in fan form</span>
+                            <p class="t-body" style="font-size: 12px; margin-top: 8px;" vid="97">Built around flow, L’Ambiguïté behaves like a disturbed surface. Reflective foil scatters across a thin black ground, turning light into liquid interference — less sparkle than signal, less decoration than distortion.</p>
+                        </div>
+                        <div class="info-col" vid="98">
+                            <div class="info-row" vid="99"><span class="t-label" vid="100">Weight</span><span class="t-data" vid="101">32 grams</span></div>
+                            <div class="info-row" vid="102"><span class="t-label" vid="103">Material</span><span class="t-data" vid="104">Metallic, satin, foil</span></div>
+                            <div class="info-row" vid="105"><span class="t-label" vid="106">Feel</span><span class="t-data" vid="107">Liquid, distorted</span></div>
+                            <div class="info-row" vid="108"><span class="t-label" vid="109">Finish</span><span class="t-data" vid="110">Acid metallic ripple</span></div>
+                            <button type="button" class="drop-acquire-btn" data-text="Acquire Edition -&gt;" data-price="32" data-edition-id="ambiguite-002" vid="111">Acquire Edition -&gt;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section id="catalog" vid="112">
+             <div class="section-header" style="margin-bottom:0; border-bottom:none;" vid="113">
+                <div vid="114">
+                    <h2 class="t-hero-sub" style="font-size: 2rem;" vid="116">Artist Archive</h2>
+                </div>
+                <!-- <div class="t-label" vid="117">Artists: 12</div> -->
+            </div>
+
+            <div class="controls" vid="118">
+                <div class="filter-group" vid="119">
+                    <button class="filter-btn active" vid="120">All</button>
+                    <button class="filter-btn" vid="121">Painters</button>
+                    <button class="filter-btn" vid="122">Sculptors</button>
+                    <button class="filter-btn" vid="123">Installations</button>
+                </div>
+                <div class="filter-group" vid="124">
+                    <button class="filter-btn" vid="125">Sort: Year (Desc)</button>
+                    <div class="crosshair" style="position:relative; width:10px; height:10px;" vid="126"></div>
+                </div>
+            </div>
+
+            <div class="catalog-grid" id="catalogGrid" vid="127">
+                
+            </div>
             
-            bgFolder.add(bgParams, 'type', ['Solid', 'Gradient']).name('Bg Type (类型)').onChange(updateBackground);
-            bgFolder.addColor(bgParams, 'color1').name('Grad Start (渐变起)').onChange(updateBackground);
-            bgFolder.addColor(bgParams, 'colorMid').name('Grad Mid (渐变中)').onChange(updateBackground);
-            bgFolder.addColor(bgParams, 'color2').name('Base/End (纯色/尾)').onChange(updateBackground);
-            bgFolder.add(bgParams, 'noise', 0.0, 0.5).name('Film Grain (颗粒强度)').onChange(v => {
-                document.body.style.setProperty('--noise-opacity', v);
-            });
-            // bgFolder.open(); // 默认收起背景以节省空间
-            
-            // 初始化背景和胶片颗粒强度
-            updateBackground();
-            document.body.style.setProperty('--noise-opacity', bgParams.noise);
-            
-            // 新增：材质控制面板
-            const matParams = { color: material.color.getHex() };
-            const matFolder = gui.addFolder('Material (材质控制)');
-            matFolder.addColor(matParams, 'color').name('Base Color').onChange(v => material.color.setHex(v));
-            matFolder.add(material, 'metalness', 0.0, 1.0).name('Metalness (金属度)');
-            matFolder.add(material, 'roughness', 0.0, 1.0).name('Roughness (粗糙度)');
-            matFolder.add(material, 'clearcoat', 0.0, 1.0).name('Clearcoat (清漆层)');
-            matFolder.add(material, 'clearcoatRoughness', 0.0, 1.0).name('CC Roughness');
-            matFolder.open();
+            <div style="text-align:center; margin-top:var(--space-lg);" vid="129">
+                 <button style="background:transparent; border:none; color:var(--muted); font-family:var(--font-mono); font-size:10px; text-transform:uppercase; cursor:pointer; letter-spacing:0.1em; border-bottom:1px solid var(--border); padding-bottom:4px;" vid="130">Load Next Sequence ...</button>
+            </div>
+        </section>
 
-            const lightFolder = gui.addFolder('Environment (环境)');
-            lightFolder.add(params, 'exposure', 0.1, 3.0).name('Exposure').onChange(v => renderer.toneMappingExposure = v);
-            lightFolder.add(params, 'envIntensity', 0.0, 5.0).name('HDRI Intensity').onChange(v => material.envMapIntensity = v);
-            lightFolder.open();
+        <footer vid="131">
+            <div class="footer-grid" vid="132">
+                <div class="f-col" style="grid-column: span 2;" vid="133">
+                    <h2 class="t-hero-sub" style="font-size: 2rem; margin-bottom:var(--space-sm);" vid="134">ouvre.nyc</h2>
+                </div>
+                <div class="f-col" vid="136">
+                    <span class="t-label" vid="137">Network</span>
+                    <a href="#" class="t-data" style="text-decoration:none; color:var(--accent);" vid="138">Instagram</a>
+                    <a href="#" class="t-data" style="text-decoration:none; color:var(--accent);" vid="139">Discord Terminal</a>
+                    <a href="#" class="t-data" style="text-decoration:none; color:var(--accent);" vid="140">Wholesale Desk</a>
+                </div>
+                <div class="f-col" vid="141">
+                    <span class="t-label" vid="142">Contact Us</span>
+                    <form id="contactForm" style="display:flex; flex-direction:column; gap:var(--space-sm);">
+                        <input type="text" id="contactName" name="name" placeholder="NAME" required>
+                        <input type="email" id="contactEmail" name="email" placeholder="EMAIL" required>
+                        <textarea id="contactMessage" name="message" placeholder="MESSAGE" rows="4" required style="background: transparent; border: 1px solid var(--border); padding: var(--space-xs) var(--space-sm); color: var(--fg); font-family: var(--font-mono); font-size: 11px; outline: none; resize: vertical; min-height: 72px;"></textarea>
+                        <button type="submit">Send Message</button>
+                        <span id="contactFormStatus" class="t-label"></span>
+                    </form>
+                </div>
+            </div>
+            <div class="flex-between w-100" style="margin-top:var(--space-xl); border-top:1px solid var(--border); padding-top:var(--space-sm);" vid="145">
+                <span class="t-label" vid="146">© 2026 ouvre llc ALL RIGHTS RESERVED.</span>
+                <span class="t-label" vid="147">SYSTEM V.1.0.4</span>
+            </div>
+        </footer>
+    </div>
 
-            const postFolder = gui.addFolder('Post-Processing (后期辉光 & 特效)');
-            postFolder.add(params, 'bloomStrength', 0.0, 3.0).name('Glow Strength').onChange(v => bloomPass.strength = v);
-            postFolder.add(params, 'bloomRadius', 0.0, 2.0).name('Glow Radius').onChange(v => bloomPass.radius = v);
-            postFolder.add(params, 'bloomThreshold', 0.0, 1.0).name('Glow Threshold').onChange(v => bloomPass.threshold = v);
-            
-            // 新增特效的控制项
-            postFolder.add(params, 'rgbShiftAmt', 0.0, 0.02).name('RGB Aberration (彩虹...)').onChange(v => rgbShiftPass.uniforms['amount'].value = v);
-            postFolder.add(params, 'scanlines', 0.0, 1.0).name('Scanlines (扫描线)').onChange(v => filmPass.uniforms['sIntensity'].value = v);
-            postFolder.add(params, 'vignetteDarkness', 0.0, 3.0).name('Vignette (镜头暗角)').onChange(v => vignettePass.uniforms['darkness'].value = v);
-            postFolder.open();
-
-            // --- 新增：保存 / 读取按钮，保存当前参数与相机初始位置 ---
-            const presetHelper = {
-                savePreset() {
-                    const preset = {
-                        params: { ...params },
-                        bgParams: { ...bgParams },
-                        interactionParams: { ...interactionParams },
-                        camera: {
-                            position: camera.position.toArray(),
-                            target: controls.target.toArray()
-                        }
-                    };
-                    try {
-                        localStorage.setItem('liquidMetalPreset', JSON.stringify(preset));
-                        console.log('Preset saved:', preset);
-                    } catch (e) {
-                        console.warn('Failed to save preset to localStorage', e);
-                    }
-                },
-                loadPreset() {
-                    try {
-                        const stored = localStorage.getItem('liquidMetalPreset');
-                        if (!stored) return;
-                        const preset = JSON.parse(stored);
-                        if (preset.params) Object.assign(params, preset.params);
-                        if (preset.bgParams) Object.assign(bgParams, preset.bgParams);
-                        if (preset.interactionParams) Object.assign(interactionParams, preset.interactionParams);
-                        if (preset.camera) {
-                            if (Array.isArray(preset.camera.position)) {
-                                camera.position.fromArray(preset.camera.position);
-                            }
-                            if (Array.isArray(preset.camera.target)) {
-                                controls.target.fromArray(preset.camera.target);
-                                controls.update();
-                            }
-                        }
-                        // 应用到渲染与背景
-                        renderer.toneMappingExposure = params.exposure;
-                        material.envMapIntensity = params.envIntensity;
-                        updateBackground();
-                        document.body.style.setProperty('--noise-opacity', bgParams.noise);
-                        console.log('Preset loaded:', preset);
-                    } catch (e) {
-                        console.warn('Failed to load preset from localStorage', e);
-                    }
-                }
-            };
-            const sessionFolder = gui.addFolder('Session (会话)');
-            sessionFolder.add(presetHelper, 'savePreset').name('Save Preset');
-            sessionFolder.add(presetHelper, 'loadPreset').name('Load Preset');
-
-            // --- 新增：鼠标控制参数与状态 ---
-            window.interactionParams = interactionParams;
-            const mouseFolder = gui.addFolder('Mouse Control (鼠标控制)');
-            mouseFolder.add(interactionParams, 'rotationSensitivity', 0.0, 3.0).name('Rotate Sensitivity');
-            mouseFolder.add(interactionParams, 'verticalSensitivity', 0.0, 3.0).name('Tilt Sensitivity');
-            mouseFolder.open();
-
-            const mouseState = { x: 0, targetX: 0, y: 0, targetY: 0 };
-            window.addEventListener('mousemove', (event) => {
-                const normalizedX = (event.clientX / window.innerWidth) * 2 - 1; // -1 ~ 1
-                mouseState.targetX = normalizedX;
-                const normalizedY = (event.clientY / window.innerHeight) * 2 - 1; // -1 ~ 1
-                mouseState.targetY = normalizedY;
-            });
-
-            // 使用快捷键切换控制面板显示状态与相机编辑模式（按 G 键）；移动端仅切换面板，相机始终可触摸操作
-            window.addEventListener('keydown', (event) => {
-                if (event.key === 'g' || event.key === 'G') {
-                    const isHidden = gui.domElement.style.display === 'none';
-                    const willShow = isHidden;
-                    gui.domElement.style.display = willShow ? '' : 'none';
-
-                    if (!isMobile) {
-                        editMode = willShow;
-                        controls.enabled = editMode;
-                    }
-                }
-            });
-
-            // 5. Animation Loop
-            const clock = new THREE.Clock();
-
-            function animate() {
-                requestAnimationFrame(animate);
-
-                // 如果模型尚未加载完成，仅更新控制器与后期处理渲染
-                if (!geometry || !basePositions || !geometry.attributes || !geometry.attributes.position) {
-                    controls.update();
-                    composer.render();
-                    return;
-                }
-
-                // 固定时间轴，仅用于灯光和特效的缓慢变化（不再驱动模型外形）
-                const time = clock.getElapsedTime();
-
-                // 根据鼠标左右/上下移动，微微旋转模型
-                mouseState.x += (mouseState.targetX - mouseState.x) * 0.1; // 平滑插值
-                mouseState.y += (mouseState.targetY - mouseState.y) * 0.1;
-                if (mesh) {
-                    mesh.rotation.y = mouseState.x * interactionParams.rotationSensitivity;
-                    mesh.rotation.x = mouseState.y * interactionParams.verticalSensitivity;
-                }
-
-                // 让橘色暖光稍微游动，增加空间层次感（不改变模型形状）
-                warmLight.position.x = 5 + Math.sin(time * 0.5);
-                warmLight.position.y = -2 + Math.cos(time * 0.3);
-
-                // 让彩虹色散的角度跟随时间缓慢旋转
-                rgbShiftPass.uniforms['angle'].value = time * 0.5;
-
-                controls.update();
-                // 使用 composer 渲染带有辉光的场景
-                composer.render();
-            }
-
-            // Handle window resizing
-            window.addEventListener('resize', onWindowResize, false);
-            function onWindowResize() {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                composer.setSize(window.innerWidth, window.innerHeight);
-            }
-
-            // Start animation
-            animate();
-        };
-    </script>
-</body>
-</html>
+</body></html>

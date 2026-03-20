@@ -1,0 +1,720 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">AERO-CORE // TURBINE SYSTEMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="5">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&amp;family=JetBrains+Mono:wght@100;400;700&amp;display=swap" rel="stylesheet" vid="7">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" vid="8"></script>
+    <style vid="9">
+        :root {
+            --bg-base: #030406;
+            --text-glow: #e8f2fa;
+            --text-main: #b4c2d0;
+            --text-dim: #546576;
+            --line-faint: rgba(255, 255, 255, 0.08);
+            --line-med: rgba(255, 255, 255, 0.25);
+            --accent: #ffffff;
+            
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --grid-size: 40px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            overflow: hidden; 
+            width: 100vw;
+            height: 100vh;
+            user-select: none;
+        }
+
+        
+        #glcanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: 80px 1fr 400px;
+            grid-template-rows: 80px 1fr 60px;
+            pointer-events: none; 
+        }
+
+        
+        a, button, .interactive {
+            pointer-events: auto;
+        }
+
+        
+        .grid-line {
+            position: absolute;
+            background: var(--line-faint);
+            z-index: 1;
+        }
+        .gl-v1 { top: 0; bottom: 0; left: 80px; width: 1px; }
+        .gl-v2 { top: 0; bottom: 0; right: 400px; width: 1px; }
+        .gl-h1 { top: 80px; left: 0; right: 0; height: 1px; }
+        .gl-h2 { bottom: 60px; left: 0; right: 0; height: 1px; }
+
+        
+        .crosshair {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            pointer-events: none;
+        }
+        .crosshair::before, .crosshair::after {
+            content: '';
+            position: absolute;
+            background: var(--line-med);
+        }
+        .crosshair::before { top: 7px; left: 0; width: 15px; height: 1px; }
+        .crosshair::after { top: 0; left: 7px; width: 1px; height: 15px; }
+
+        .ch-tl { top: 72px; left: 72px; }
+        .ch-tr { top: 72px; right: 392px; }
+        .ch-bl { bottom: 52px; left: 72px; }
+        .ch-br { bottom: 52px; right: 392px; }
+
+        
+        .mono-micro {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+        .mono-data {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            color: var(--text-main);
+        }
+
+        
+        header {
+            grid-column: 1 / -1;
+            grid-row: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            pointer-events: auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .brand-logo {
+            font-family: var(--font-sans);
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.4em;
+            color: var(--text-glow);
+        }
+        .brand-sys {
+            border-left: 1px solid var(--line-med);
+            padding-left: 16px;
+        }
+
+        nav {
+            display: flex;
+            gap: 40px;
+        }
+        nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+            position: relative;
+        }
+        nav a:hover, nav a.active {
+            color: var(--text-glow);
+        }
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--text-glow);
+            box-shadow: 0 0 5px var(--text-glow);
+        }
+
+        
+        aside.categories {
+            grid-column: 1;
+            grid-row: 2;
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            border-right: 1px solid var(--line-faint);
+            pointer-events: auto;
+        }
+        .cat-btn {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            padding: 20px 0;
+            transition: all 0.3s;
+        }
+        .cat-btn:hover, .cat-btn.active {
+            color: var(--text-glow);
+        }
+        .cat-btn.active {
+            border-left: 2px solid var(--text-glow);
+        }
+
+        
+        main.hero-display {
+            grid-column: 2;
+            grid-row: 2;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        
+        .turbine-monolith {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.02) 20%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.02) 80%, transparent 100%);
+            border-left: 1px solid rgba(255,255,255,0.3);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 
+                -20px 0 50px -10px rgba(200, 220, 255, 0.05),
+                inset 2px 0 10px rgba(255,255,255,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        
+        .turbine-monolith::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: -50%;
+            width: 200%;
+            height: 60px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
+            transform: rotate(-15deg);
+            filter: blur(20px);
+            opacity: 0.6;
+            mix-blend-mode: overlay;
+        }
+
+        
+        .blade-structure {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                repeating-linear-gradient(to bottom, transparent, transparent 48px, rgba(255,255,255,0.03) 49px, rgba(255,255,255,0.05) 50px);
+            mask-image: linear-gradient(to right, black 20%, transparent 80%);
+            -webkit-mask-image: linear-gradient(to right, black 20%, transparent 80%);
+        }
+
+        
+        .geo-metadata {
+            position: absolute;
+            top: 45%;
+            left: 100%;
+            width: 200px;
+            padding-left: 15px;
+            border-left: 1px solid var(--line-med);
+        }
+        .geo-metadata::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 15px; height: 1px;
+            background: var(--line-med);
+        }
+        .geo-metadata .primary-mark {
+            font-family: var(--font-sans);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-glow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .geo-metadata .primary-mark svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: var(--text-dim);
+        }
+        .meta-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .meta-row {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            border-bottom: 1px solid var(--line-faint);
+            padding-bottom: 2px;
+        }
+        
+        
+        .wireframe-box {
+            position: absolute;
+            top: -20px;
+            left: -40px;
+            width: calc(100% + 80px);
+            height: calc(100% + 40px);
+            border: 1px solid var(--line-faint);
+            pointer-events: none;
+        }
+        .wireframe-box::before {
+            content: '';
+            position: absolute;
+            bottom: -15px; right: -15px; width: 30px; height: 30px;
+            border-right: 1px solid var(--text-dim);
+            border-bottom: 1px solid var(--text-dim);
+        }
+
+        
+        aside.telemetry {
+            grid-column: 3;
+            grid-row: 2;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--line-faint);
+            pointer-events: auto;
+            background: rgba(3, 4, 6, 0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        .panel-header {
+            margin-bottom: 40px;
+        }
+        .model-num {
+            font-family: var(--font-sans);
+            font-size: 32px;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+        .model-name {
+            color: var(--text-dim);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+        }
+
+        .data-group {
+            margin-bottom: 30px;
+        }
+        .data-label {
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--line-med);
+            padding-bottom: 4px;
+            display: inline-block;
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .spec-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: rgba(255,255,255,0.02);
+            padding: 10px;
+            border: 1px solid var(--line-faint);
+        }
+        .spec-val {
+            font-family: var(--font-sans);
+            font-size: 16px;
+            color: var(--text-glow);
+        }
+
+        .price-block {
+            margin-top: auto;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .price-currency {
+            font-family: var(--font-mono);
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+        .price-val {
+            font-family: var(--font-sans);
+            font-size: 28px;
+            font-weight: 300;
+            color: var(--accent);
+        }
+
+        button.action-btn {
+            background: var(--line-faint);
+            border: 1px solid var(--line-med);
+            color: var(--text-glow);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 16px;
+            width: 100%;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        button.action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        button.action-btn:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: var(--text-glow);
+            box-shadow: 0 0 15px rgba(255,255,255,0.1);
+        }
+        button.action-btn:hover::before {
+            left: 100%;
+        }
+
+        
+        footer {
+            grid-column: 1 / -1;
+            grid-row: 3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            border-top: 1px solid var(--line-faint);
+        }
+
+        .stream-data {
+            display: flex;
+            gap: 24px;
+        }
+        .stream-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-dot {
+            width: 4px; height: 4px;
+            background: var(--text-glow);
+            box-shadow: 0 0 4px var(--text-glow);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+    </style>
+</head>
+<body vid="10">
+
+    
+    <canvas id="glcanvas" vid="11"></canvas>
+
+    <div class="ui-layer" vid="12">
+        
+        <div class="grid-line gl-v1" vid="13"></div>
+        <div class="grid-line gl-v2" vid="14"></div>
+        <div class="grid-line gl-h1" vid="15"></div>
+        <div class="grid-line gl-h2" vid="16"></div>
+        
+        <div class="crosshair ch-tl" vid="17"></div>
+        <div class="crosshair ch-tr" vid="18"></div>
+        <div class="crosshair ch-bl" vid="19"></div>
+        <div class="crosshair ch-br" vid="20"></div>
+
+        
+        <header vid="21">
+            <div class="brand" vid="22">
+                <div class="brand-logo" vid="23">AERO-CORE</div>
+                <div class="brand-sys mono-micro" vid="24">Sys.Auth_99</div>
+            </div>
+            <nav vid="25">
+                <a href="#" class="active" vid="26">Turbines</a>
+                <a href="#" vid="27">Impellers</a>
+                <a href="#" vid="28">Axial_Flow</a>
+                <a href="#" vid="29">Archival</a>
+            </nav>
+            <div class="mono-micro" id="clock" vid="30">T-MINUS 00:00:00</div>
+        </header>
+
+        
+        <aside class="categories" vid="31">
+            <button class="cat-btn active" vid="32">MK.IV Series</button>
+            <button class="cat-btn" vid="33">MK.III Series</button>
+            <button class="cat-btn" vid="34">Proto_Dev</button>
+        </aside>
+
+        
+        <main class="hero-display" vid="35">
+            <div class="turbine-monolith" vid="36">
+                <div class="blade-structure" vid="37"></div>
+                <div class="wireframe-box" vid="38"></div>
+                
+                
+                <div class="geo-metadata" vid="39">
+                    <div class="primary-mark" vid="40">
+                        227
+                        <svg viewBox="0 0 24 24" vid="41"><path d="M12 2L22 20H2L12 2Z" stroke-width="1.5" vid="42"></path><circle cx="12" cy="14" r="2" fill="currentColor" vid="43"></circle></svg>
+                    </div>
+                    <div class="meta-list mono-micro" vid="44">
+                        <div class="meta-row" vid="45"><span vid="46">AXIS_X</span><span class="mono-data" vid="47">44.091.2</span></div>
+                        <div class="meta-row" vid="48"><span vid="49">AXIS_Y</span><span class="mono-data" vid="50">-12.884</span></div>
+                        <div class="meta-row" vid="51"><span vid="52">ROTATION</span><span class="mono-data" vid="53">360.00°</span></div>
+                        <div style="margin-top: 8px; border-top: 1px dotted var(--line-med); padding-top: 4px;" vid="54">
+                            <span style="color: var(--line-med);" vid="55">SEQ_INIT:</span> AWAITING_CMD
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        
+        <aside class="telemetry" vid="56">
+            <div class="panel-header" vid="57">
+                <div class="mono-micro" style="margin-bottom: 8px;" vid="58">Asset_Classification // Class 1</div>
+                <h1 class="model-num" vid="59">HV-TRB_04</h1>
+                <h2 class="model-name mono-micro" vid="60">HIGH VELOCITY TURBINE SYSTEM</h2>
+            </div>
+
+            <div class="data-group" vid="61">
+                <div class="data-label mono-micro" vid="62">Performance Telemetry</div>
+                <div class="spec-grid" vid="63">
+                    <div class="spec-item" vid="64">
+                        <span class="mono-micro" vid="65">Airflow (CFM)</span>
+                        <span class="spec-val" vid="66">14,500</span>
+                    </div>
+                    <div class="spec-item" vid="67">
+                        <span class="mono-micro" vid="68">Max RPM</span>
+                        <span class="spec-val" vid="69">3,200</span>
+                    </div>
+                    <div class="spec-item" vid="70">
+                        <span class="mono-micro" vid="71">Acoustic (dB)</span>
+                        <span class="spec-val" vid="72">42.4</span>
+                    </div>
+                    <div class="spec-item" vid="73">
+                        <span class="mono-micro" vid="74">Power Draw</span>
+                        <span class="spec-val" vid="75">850W</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-group" vid="76">
+                <div class="data-label mono-micro" vid="77">Material Construct</div>
+                <div class="mono-micro" style="color: var(--text-main); line-height: 1.8;" vid="78">
+                    ROTOR: CARBON-TITANIUM ALLOY<br vid="79">
+                    HOUSING: EXTRUDED ALUMINUM [MIL-SPEC]<br vid="80">
+                    BEARINGS: MAGNETIC LEVITATION
+                </div>
+            </div>
+
+            <div class="price-block" vid="81">
+                <span class="price-currency" vid="82">USD</span>
+                <span class="price-val" vid="83">2,450.00</span>
+            </div>
+
+            <button class="action-btn" vid="84">[ INITIATE ACQUISITION ]</button>
+        </aside>
+
+        
+        <footer vid="85">
+            <div class="stream-data" vid="86">
+                <div class="stream-item mono-micro" vid="87">
+                    <div class="status-dot" vid="88"></div>
+                    SYS.ONLINE
+                </div>
+                <div class="stream-item mono-micro" style="color: var(--line-med);" vid="89">
+                    LAT: 34.0522 N / LNG: 118.2437 W
+                </div>
+            </div>
+            <div class="mono-micro" style="color: var(--text-dim);" vid="90">
+                AERO-CORE IND. // RESTRICTED ACCESS
+            </div>
+        </footer>
+    </div>
+
+    
+    <script vid="91">
+        const canvas = document.getElementById('glcanvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
+        
+        const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        const scene = new THREE.Scene();
+
+        
+        const vertexShader = `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = vec4(position, 1.0);
+            }
+        `;
+
+        const fragmentShader = `
+            uniform float u_time;
+            uniform vec2 u_resolution;
+            varying vec2 vUv;
+
+            // Pseudo-random generator for film grain
+            float random(vec2 st) {
+                return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+            }
+
+            // Simplex noise function for dust clouds
+            vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+            float snoise(vec2 v) {
+                const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+                vec2 i  = floor(v + dot(v, C.yy) );
+                vec2 x0 = v -   i + dot(i, C.xx);
+                vec2 i1;
+                i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+                vec4 x12 = x0.xyxy + C.xxzz;
+                x12.xy -= i1;
+                i = mod289(i);
+                vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 ));
+                vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+                m = m*m ;
+                m = m*m ;
+                vec3 x = 2.0 * fract(p * C.www) - 1.0;
+                vec3 h = abs(x) - 0.5;
+                vec3 ox = floor(x + 0.5);
+                vec3 a0 = x - ox;
+                m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+                vec3 g;
+                g.x  = a0.x  * x0.x  + h.x  * x0.y;
+                g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+                return 130.0 * dot(m, g);
+            }
+
+            void main() {
+                vec2 st = gl_FragCoord.xy / u_resolution.xy;
+                st.x *= u_resolution.x / u_resolution.y;
+
+                // Base color (deep charcoal/black)
+                vec3 color = vec3(0.01, 0.015, 0.02);
+
+                // Volumetric light streak (top left originating)
+                vec2 lightOrigin = vec2(0.2, 1.2);
+                float distToLight = length(st - lightOrigin);
+                
+                // Create a wide, diffuse beam
+                float beam = smoothstep(1.5, 0.0, distToLight) * 0.15;
+                // Add an angled streak matching the reference
+                float angle = atan(st.y - lightOrigin.y, st.x - lightOrigin.x);
+                float streak = smoothstep(0.1, 0.0, abs(angle + 0.5)) * smoothstep(1.5, 0.0, distToLight) * 0.2;
+                
+                color += vec3(0.8, 0.9, 1.0) * (beam + streak);
+
+                // Slow moving dust clouds
+                float dust = snoise(st * 3.0 + u_time * 0.05) * 0.5 + 0.5;
+                dust *= snoise(st * 6.0 - u_time * 0.02) * 0.5 + 0.5;
+                color += vec3(0.5, 0.6, 0.7) * dust * beam * 1.5;
+
+                // Heavy film grain (crucial for this aesthetic)
+                float grain = random(st * u_time) * 0.15;
+                color += vec3(grain);
+
+                // Vignette
+                vec2 uv = vUv;
+                uv *=  1.0 - uv.yx;
+                float vig = uv.x*uv.y * 15.0;
+                vig = pow(vig, 0.25);
+                color *= vig;
+
+                gl_FragColor = vec4(color, 1.0);
+            }
+        `;
+
+        const uniforms = {
+            u_time: { value: 0.0 },
+            u_resolution: { value: new THREE.Vector2() }
+        };
+
+        const material = new THREE.ShaderMaterial({
+            vertexShader,
+            fragmentShader,
+            uniforms
+        });
+
+        const plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+        scene.add(plane);
+
+        function resize() {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function animate(time) {
+            uniforms.u_time.value = time * 0.001;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+
+        
+        setInterval(() => {
+            const now = new Date();
+            const timeStr = now.toISOString().split('T')[1].split('.')[0];
+            document.getElementById('clock').innerText = 'SYS_T: ' + timeStr;
+        }, 1000);
+    </script>
+
+</body></html>

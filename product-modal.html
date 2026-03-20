@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product modal — ouvre</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@100;300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
+    <style>@import url("index.css");</style>
+</head>
+<body style="background:var(--bg);color:var(--fg);min-height:100vh;padding:var(--space-md);">
+    <p class="t-label" style="margin-bottom:var(--space-sm);max-width:36rem;line-height:1.5;">
+        Standalone product modal markup (same as <code style="font-size:10px;">product-modal.fragment.html</code> loaded by <code style="font-size:10px;">index.html</code>). Edit the fragment file to change both; refresh this page after edits if you paste manually.
+    </p>
+    <button type="button" class="product-modal__cta" id="product-modal-preview-open" data-text="Open modal (preview)" style="width:auto;max-width:none;">Open modal (preview)</button>
+
+    <div id="product-modal" class="product-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
+        <div class="product-modal__backdrop" tabindex="-1" aria-hidden="true"></div>
+        <div class="product-modal__card">
+            <button type="button" class="product-modal__close" aria-label="Close">×</button>
+            <div class="product-modal__split">
+                <div class="product-modal__gallery">
+                    <img src="src/IMG_4365.jpg" alt="Edition detail — radiating structure" loading="lazy">
+                    <img src="src/IMG_4370.jpg" alt="Edition detail — fan silhouette" loading="lazy">
+                    <img src="src/IMG_4374.jpg" alt="Edition detail — pleated surface" loading="lazy">
+                    <img src="src/IMG_4406.jpg" alt="Edition detail — curved slats" loading="lazy">
+                </div>
+                <div class="product-modal__detail">
+                    <h2 id="product-modal-title" class="product-modal__title">Babylon</h2>
+                    <p class="product-modal__subtitle t-label">STRUCTURE HELD IN BLACK</p>
+                    <p class="product-modal__price" aria-live="polite">$32.00</p>
+                    <p class="product-modal__desc t-body">Preview copy — sculptural fan edition. Built around structure, tighter and more controlled.</p>
+                    <ul class="product-modal__specs" id="product-modal-specs">
+                        <li><span class="t-label">Weight</span><span>29 grams</span></li>
+                        <li><span class="t-label">Material</span><span>Bamboo, canvas</span></li>
+                    </ul>
+                    <ul class="product-modal__specs product-modal__specs--dimensions" aria-label="Dimensions">
+                        <li><span class="t-label">Dimensions</span><span>Open span 320 mm · Closed length 210 mm</span></li>
+                    </ul>
+                    <p class="product-modal__edition"><span class="t-label">Edition</span><span> Numbered studio release.</span></p>
+                    <div class="product-modal__cta-block">
+                        <button type="button" class="product-modal__cta" data-text="Add to cart">Add to cart</button>
+                        <p class="product-modal__shipping-returns t-body">Shipping &amp; returns — Ships in 3–5 business days. Final sale on opened editions; unopened items may be returned within 14 days.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var modal = document.getElementById('product-modal');
+            var backdrop = modal.querySelector('.product-modal__backdrop');
+            var closeBtn = modal.querySelector('.product-modal__close');
+            var openBtn = document.getElementById('product-modal-preview-open');
+            var prevOverflow = '';
+
+            function openModal() {
+                prevOverflow = document.body.style.overflow;
+                modal.removeAttribute('hidden');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                if (closeBtn && closeBtn.focus) closeBtn.focus();
+            }
+
+            function closeModal() {
+                modal.setAttribute('hidden', '');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = prevOverflow;
+                if (openBtn && openBtn.focus) openBtn.focus();
+            }
+
+            openBtn.addEventListener('click', openModal);
+            closeBtn.addEventListener('click', closeModal);
+            backdrop.addEventListener('click', closeModal);
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !modal.hasAttribute('hidden')) closeModal();
+            });
+        })();
+    </script>
+</body>
+</html>
