@@ -126,7 +126,7 @@ h3 {
     right: 0;
     width: 100%;
     top: auto;
-    bottom: clamp(20px, 6vh, 72px);
+    bottom: clamp(44px, 10vh, 120px);
 }
 
 @keyframes hero-title-jitter {
@@ -291,51 +291,161 @@ nav {
     pointer-events: none;
 }
 
-/* Video inset in a black field; transform updated from scroll (see index.js) */
-.scroll-video-stage {
+/* ref/ouvre-backroom-background — fullscreen behind content (replaces scroll-video) */
+.ouvre-backroom {
     position: fixed;
     inset: 0;
     z-index: 2;
+    width: 100%;
+    height: 100%;
+    min-height: 100svh;
+    min-height: 100dvh;
     background: #000;
     pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    perspective: 1600px;
-    perspective-origin: 50% 42%;
-    transform-style: preserve-3d;
     overflow: hidden;
 }
 
-.scroll-video-stage video {
+.ouvre-backroom__bg {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    max-width: 100%;
-    max-height: 100%;
     object-fit: cover;
-    transform-origin: 50% 45%;
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-    opacity: 0.92;
-    /* Slightly darker, less “TV on a wall”; sits closer to the black veil / page bg */
-    filter: brightness(0.66) contrast(1.14) saturate(0.88);
-    /* Feather edges into black; --video-mask-* updated from scroll in index.js */
-    -webkit-mask-image: radial-gradient(
-        ellipse var(--video-mask-ex, 98%) var(--video-mask-ey, 94%) at 50% 48%,
-        #000 var(--video-mask-core, 64%),
-        transparent 100%
-    );
-    mask-image: radial-gradient(
-        ellipse var(--video-mask-ex, 98%) var(--video-mask-ey, 94%) at 50% 48%,
-        #000 var(--video-mask-core, 64%),
-        transparent 100%
-    );
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
+    object-position: center;
+    user-select: none;
+    pointer-events: none;
 }
 
+.ouvre-backroom__gif-wrap {
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    width: 220px;
+    height: 132px;
+    transform: translate(-50%, -50%);
+}
+
+.ouvre-backroom__gif {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    pointer-events: none;
+}
+
+.video-feather {
+    -webkit-mask-image: radial-gradient(
+        circle at center,
+        rgba(0, 0, 0, 1) 60%,
+        rgba(0, 0, 0, 0) 78%
+    );
+    mask-image: radial-gradient(
+        circle at center,
+        rgba(0, 0, 0, 1) 60%,
+        rgba(0, 0, 0, 0) 78%
+    );
+}
+
+.ouvre-backroom__overlays {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.ouvre-backroom__scanlines {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.085) 0px,
+        rgba(255, 255, 255, 0.085) 1px,
+        rgba(0, 0, 0, 0.22) 2px,
+        rgba(0, 0, 0, 0.22) 4px
+    );
+    opacity: 0.58;
+    mix-blend-mode: overlay;
+    animation: ouvre-br-scanMove 0.22s linear infinite, ouvre-br-scanFlicker 1.1s steps(2) infinite;
+}
+
+.ouvre-backroom__noise {
+    position: absolute;
+    inset: 0;
+    opacity: 0.42;
+    mix-blend-mode: overlay;
+    background-size: 160px 160px;
+    filter: contrast(200%) brightness(135%) saturate(125%);
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='180'%20height='180'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='.95'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'%20opacity='.65'/%3E%3C/svg%3E");
+    animation: ouvre-br-noiseShift 0.35s steps(2) infinite, ouvre-br-noiseFlicker 0.9s steps(3) infinite;
+}
+
+.ouvre-backroom__noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.55;
+    mix-blend-mode: overlay;
+    background-size: 120px 120px;
+    filter: contrast(220%) brightness(150%);
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='180'%20height='180'%3E%3Cfilter%20id='n2'%3E%3CfeTurbulence%20type='turbulence'%20baseFrequency='.75'%20numOctaves='4'%20stitchTiles='stitch'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n2)'%20opacity='.7'/%3E%3C/svg%3E");
+    animation: ouvre-br-noiseShift2 0.45s steps(2) infinite;
+}
+
+.ouvre-backroom__light {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(
+        100deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.08) 45%,
+        rgba(255, 255, 255, 0) 60%
+    );
+    opacity: 0.68;
+    mix-blend-mode: screen;
+    filter: blur(0.2px);
+    animation: ouvre-br-lightSweep 2.35s ease-in-out infinite, ouvre-br-lightFlicker 1.4s steps(3) infinite;
+}
+
+@keyframes ouvre-br-scanMove {
+    0% { transform: translateY(-4px); }
+    100% { transform: translateY(4px); }
+}
+
+@keyframes ouvre-br-scanFlicker {
+    0% { opacity: 0.52; }
+    50% { opacity: 0.66; }
+    100% { opacity: 0.56; }
+}
+
+@keyframes ouvre-br-noiseShift {
+    0% { transform: translate3d(0, 0, 0); }
+    25% { transform: translate3d(-3%, 1.5%, 0); }
+    50% { transform: translate3d(2%, -2.5%, 0); }
+    75% { transform: translate3d(3%, 2.5%, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes ouvre-br-noiseShift2 {
+    0% { transform: translate3d(0, 0, 0); }
+    25% { transform: translate3d(2%, 1%, 0); }
+    50% { transform: translate3d(-2%, -1.5%, 0); }
+    75% { transform: translate3d(-3%, 2%, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes ouvre-br-lightSweep {
+    0% { transform: translateX(-12%); }
+    50% { transform: translateX(12%); }
+    100% { transform: translateX(-12%); }
+}
+
+@keyframes ouvre-br-lightFlicker {
+    0% { opacity: 0.6; }
+    35% { opacity: 0.78; }
+    70% { opacity: 0.62; }
+    100% { opacity: 0.7; }
+}
+
+/* WebGL grain disabled — ref backroom uses CSS scanlines/noise/light only */
 #glcanvas {
     position: fixed;
     top: 0;
@@ -345,6 +455,7 @@ nav {
     z-index: 20;
     mix-blend-mode: normal;
     pointer-events: none;
+    display: none;
 }
 
 section {
@@ -368,9 +479,15 @@ section {
     padding-bottom: 180px;
 }
 
+/* Temporarily hide these homepage sections */
+#drops,
+#catalog {
+    display: none;
+}
+
 .hero-title-wrapper {
     position: absolute;
-    top: 50%;
+    top: 46%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
@@ -404,16 +521,19 @@ section {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 60px;
+    gap: 20px;
 }
 
 .system-banner .t-body {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
     max-width: 500px;
     border: 1px solid var(--border);
     padding: var(--space-md);
-    margin-top: clamp(24px, 4vh, 56px);
-    margin-bottom: clamp(24px, 4vh, 56px);
+    margin-top: clamp(12px, 2.4vh, 28px);
+    margin-bottom: clamp(12px, 2.4vh, 28px);
     margin-left: auto;
     margin-right: auto;
     text-align: center;
@@ -431,6 +551,10 @@ section {
         linear-gradient(var(--muted), var(--muted)) bottom right / var(--banner-corner-thickness) var(--banner-corner-size) no-repeat;
 }
 
+.system-banner .t-body > span {
+    display: block;
+}
+
 /* Opacity driven by scroll (see `updateScrollRevealSections` in index.js) */
 #landing .system-banner,
 #drops,
@@ -446,9 +570,54 @@ section {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
     margin-bottom: var(--space-lg);
     border-bottom: 1px solid var(--border);
     padding-bottom: var(--space-sm);
+}
+
+.join-email-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    width: 100%;
+}
+
+.join-email-inline input {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 6px 8px;
+    min-width: 0;
+    flex: 1 1 auto;
+    outline: none;
+}
+
+.join-email-inline input:focus {
+    border-color: var(--fg);
+}
+
+.join-email-inline #join-email-submit {
+    margin-top: 0;
+}
+
+.join-email-inline #join-email-status {
+    min-width: 100px;
+    text-align: left;
+}
+
+#landing .join-email-inline {
+    margin: 0;
+    justify-content: stretch;
+    flex-wrap: wrap;
+}
+
+#landing #join-email-form #join-email-status {
+    width: 100%;
 }
 
 .drop-cards {
@@ -535,6 +704,7 @@ section {
 
 /* Acquire CTA + contact submit: outline, hollow, jitter + holo glitch layers */
 #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn,
+#join-email-submit,
 #contactForm button.glitch-outline-btn {
     background: transparent;
     border: 1px solid var(--border);
@@ -561,12 +731,15 @@ section {
 }
 
 #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn:hover,
+#join-email-submit:hover,
 #contactForm button.glitch-outline-btn:hover {
     border-color: var(--border-hover);
 }
 
 #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::before,
 #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after,
+#join-email-submit::before,
+#join-email-submit::after,
 #contactForm button.glitch-outline-btn::before,
 #contactForm button.glitch-outline-btn::after {
     content: attr(data-text);
@@ -588,6 +761,7 @@ section {
 }
 
 #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::before,
+#join-email-submit::before,
 #contactForm button.glitch-outline-btn::before {
     background-image: linear-gradient(
         110deg,
@@ -607,6 +781,7 @@ section {
 }
 
 #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after,
+#join-email-submit::after,
 #contactForm button.glitch-outline-btn::after {
     background-image: linear-gradient(
         -125deg,
@@ -626,6 +801,7 @@ section {
 
 @media (prefers-reduced-motion: reduce) {
     #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn,
+    #join-email-submit,
     #contactForm button.glitch-outline-btn {
         animation: none;
         text-shadow: none;
@@ -633,6 +809,8 @@ section {
 
     #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::before,
     #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after,
+    #join-email-submit::before,
+    #join-email-submit::after,
     #contactForm button.glitch-outline-btn::before,
     #contactForm button.glitch-outline-btn::after {
         content: none;

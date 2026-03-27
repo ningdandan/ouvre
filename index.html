@@ -34,6 +34,7 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" vid="8"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="local.config.js"></script>
     <script defer src="index.js"></script>
 
     <style vid="9">@import url("index.css"); </style>
@@ -43,8 +44,17 @@
     <div id="canvas-container" vid="11"></div>
     <!-- Black veil + video above point cloud; scroll sync in index.js -->
     <div id="point-cloud-veil" class="point-cloud-veil" aria-hidden="true"></div>
-    <div id="scroll-video-stage" class="scroll-video-stage" aria-hidden="true">
-        <video id="scroll-bg-video" src="video.mp4" muted loop playsinline autoplay></video>
+    <!-- ref/ouvre-backroom-background.tsx — same layers (add landing.jpg + video3.gif at site root) -->
+    <div id="ouvre-backroom" class="ouvre-backroom" aria-hidden="true">
+        <img src="landing.jpg" alt="" class="ouvre-backroom__bg" width="1920" height="1080" decoding="async" />
+        <div class="ouvre-backroom__gif-wrap video-feather">
+            <img src="video3.gif" alt="" class="ouvre-backroom__gif" width="100" height="70" decoding="async" />
+        </div>
+        <div class="ouvre-backroom__overlays">
+            <div class="ouvre-backroom__scanlines"></div>
+            <div class="ouvre-backroom__noise"></div>
+            <div class="ouvre-backroom__light"></div>
+        </div>
     </div>
     <!-- Background noise overlay (film grain / dust) -->
     <canvas id="glcanvas"></canvas>
@@ -82,12 +92,27 @@
                 <h1 class="t-hero" vid="37" data-text="ouvre">ouvre</h1>
                 <span class="t-body hero-sub-glitch" vid="39" data-text="the only fan you need">t  h e    o n l  y   f a n   y o  u  n ee  d</span>
             </div>
-            
+
             <div class="landing-system-banner-wrap" vid="40">
                 <div class="system-banner" vid="41">
-                    <span class="t-body" vid="44">Ouvre is an artist-led fan house based in Bushwick. We make sculptural fans for electronic nights—for dancing, for performance, for the way a body looks when it moves.</span>
+                    <div class="t-body" vid="44">
+                        <span>Ouvre is an artist-led fan house based in Bushwick. We make sculptural fans for electronic nights-for dancing, for performance, for the way a body looks when it moves.</span>
+                        <form id="join-email-form" class="join-email-inline" novalidate>
+                            <input
+                                type="email"
+                                id="join-email-input"
+                                name="email"
+                                placeholder="Join email list"
+                                aria-label="Join email list"
+                                required
+                            >
+                            <button type="submit" id="join-email-submit" data-text="Join -&gt;">Join -&gt;</button>
+                            <span id="join-email-status" class="t-label" aria-live="polite"></span>
+                        </form>
+                    </div>
                 </div>
             </div>
+
         </section>
 
         
@@ -231,4 +256,8 @@
         </footer>
     </div>
 
-</body></html>
+</body></html> <div class="landing-system-banner-wrap" vid="40">
+                <div class="system-banner" vid="41">
+                    <span class="t-body" vid="44">Ouvre is an artist-led fan house based in Bushwick. We make sculptural fans for electronic nights—for dancing, for performance, for the way a body looks when it moves.</span>
+                </div>
+            </div>

@@ -56,58 +56,6 @@
         renderDebugVals();
 
         // -------------------------
-        // CRT scanline overlay (top-most screen effect)
-        // -------------------------
-        const crtStyleId = 'crt-overlay-style';
-        if (!document.getElementById(crtStyleId)) {
-            const crtStyle = document.createElement('style');
-            crtStyle.id = crtStyleId;
-            crtStyle.textContent = `
-                #crt-overlay {
-                    position: fixed;
-                    inset: 0;
-                    pointer-events: none;
-                    z-index: 2147483646;
-                    opacity: 0.9;
-                    background-image:
-                        repeating-linear-gradient(
-                            to bottom,
-                            rgba(255, 255, 255, 0.12) 0px,
-                            rgba(255, 255, 255, 0.12) 1px,
-                            rgba(0, 0, 0, 0.12) 2px,
-                            rgba(0, 0, 0, 0.12) 3px
-                        ),
-                        linear-gradient(
-                            to bottom,
-                            rgba(255, 255, 255, 0.04),
-                            rgba(0, 0, 0, 0.08)
-                        );
-                    mix-blend-mode: soft-light;
-                    animation: crt-scan-move 1s linear infinite, crt-flicker 0.12s steps(2, end) infinite;
-                    will-change: background-position, opacity;
-                }
-
-                @keyframes crt-scan-move {
-                    0% { background-position: 0 0, 0 0; }
-                    100% { background-position: 0 180px, 0 0; }
-                }
-
-                @keyframes crt-flicker {
-                    0% { opacity: 0.28; }
-                    50% { opacity: 0.34; }
-                    100% { opacity: 0.30; }
-                }
-            `;
-            document.head.appendChild(crtStyle);
-        }
-
-        if (!document.getElementById('crt-overlay')) {
-            const crtOverlay = document.createElement('div');
-            crtOverlay.id = 'crt-overlay';
-            document.body.appendChild(crtOverlay);
-        }
-
-        // -------------------------
         // Clock banner
         // -------------------------
         const clockEl = document.getElementById('clock');
@@ -150,6 +98,113 @@
                 window.location.href = mailtoUrl;
 
                 if (statusEl) statusEl.innerText = 'Opening your email client...';
+            });
+        }
+
+        // -------------------------
+        // Join email list (Klaviyo client API)
+        // -------------------------
+        const joinEmailForm = document.getElementById('join-email-form');
+        if (joinEmailForm) {
+            const joinEmailInput = document.getElementById('join-email-input');
+            const joinEmailStatus = document.getElementById('join-email-status');
+            const joinEmailSubmit = document.getElementById('join-email-submit');
+            const localConfig = window.OUVRE_LOCAL_CONFIG || {};
+            const klaviyoSiteId = String(localConfig.KLAVIYO_SITE_ID || '').trim();
+            const klaviyoListId = String(localConfig.KLAVIYO_LIST_ID || '').trim();
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const joinButtonDefaultLabel = 'Join ->';
+            const joinButtonJoinedLabel = 'Joined';
+
+            const setJoinStatus = (text, isError) => {
+                if (!joinEmailStatus) return;
+                joinEmailStatus.innerText = text;
+                joinEmailStatus.style.color = isError ? 'rgba(220, 38, 38, 0.95)' : 'var(--muted)';
+            };
+
+            const setJoinButtonLabel = (isJoined) => {
+                if (!joinEmailSubmit) return;
+                const label = isJoined ? joinButtonJoinedLabel : joinButtonDefaultLabel;
+                joinEmailSubmit.innerText = label;
+                joinEmailSubmit.dataset.text = label;
+            };
+
+            setJoinButtonLabel(false);
+
+            if (joinEmailInput) {
+                joinEmailInput.addEventListener('input', () => {
+                    setJoinButtonLabel(false);
+                });
+            }
+
+            joinEmailForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                if (!joinEmailInput) return;
+
+                const email = joinEmailInput.value.trim();
+                if (!email || !emailPattern.test(email)) {
+                    setJoinStatus('Enter a valid email.', true);
+                    joinEmailInput.focus();
+                    return;
+                }
+
+                if (!klaviyoSiteId || !klaviyoListId) {
+                    setJoinStatus('List config missing.', true);
+                    return;
+                }
+
+                if (joinEmailSubmit) joinEmailSubmit.disabled = true;
+                setJoinStatus('Submitting...', false);
+
+                try {
+                    const response = await fetch(
+                        `https://a.klaviyo.com/client/subscriptions/?company_id=${encodeURIComponent(
+                            klaviyoSiteId
+                        )}`,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                revision: '2024-02-15',
+                            },
+                            body: JSON.stringify({
+                                data: {
+                                    type: 'subscription',
+                                    attributes: {
+                                        profile: {
+                                            data: {
+                                                type: 'profile',
+                                                attributes: { email },
+                                            },
+                                        },
+                                    },
+                                    relationships: {
+                                        list: {
+                                            data: {
+                                                type: 'list',
+                                                id: klaviyoListId,
+                                            },
+                                        },
+                                    },
+                                },
+                            }),
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(`Klaviyo subscribe failed: ${response.status}`);
+                    }
+
+                    joinEmailForm.reset();
+                    setJoinButtonLabel(true);
+                    setJoinStatus('Joined.', false);
+                } catch (error) {
+                    setJoinButtonLabel(false);
+                    setJoinStatus('Submit failed.', true);
+                } finally {
+                    if (joinEmailSubmit) joinEmailSubmit.disabled = false;
+                }
             });
         }
 
@@ -377,46 +432,7 @@
             }
         }
 
-        const landingSystemBannerEl = document.querySelector('#landing .system-banner');
-        const dropsSectionEl = document.getElementById('drops');
-        const catalogSectionEl = document.getElementById('catalog');
-
-        function smoothstep01(t) {
-            const x = Math.min(1, Math.max(0, t));
-            return x * x * (3 - 2 * x);
-        }
-
-        /** Opacity 0→1→0 from how close the visible part of `el` is to a viewport reading line (works for tall sections). */
-        function opacityFromViewportScroll(rect, vh) {
-            const visibleTop = Math.max(0, rect.top);
-            const visibleBottom = Math.min(vh, rect.bottom);
-            if (visibleBottom <= visibleTop) return 0;
-            const focusY = (visibleTop + visibleBottom) * 0.5;
-            const viewAnchor = vh * 0.38;
-            const dist = Math.abs(focusY - viewAnchor);
-            const inner = vh * 0.14;
-            const outer = vh * 0.48;
-            if (dist <= inner) return 1;
-            if (dist >= outer) return 0;
-            return smoothstep01(1 - (dist - inner) / (outer - inner));
-        }
-
-        function updateScrollRevealSections() {
-            const vh = window.innerHeight;
-            const apply = (el) => {
-                if (!el) return;
-                const o = opacityFromViewportScroll(el.getBoundingClientRect(), vh);
-                el.style.opacity = String(o);
-            };
-            apply(landingSystemBannerEl);
-            apply(dropsSectionEl);
-            apply(catalogSectionEl);
-        }
-
-        (function scrollRevealRafLoop() {
-            updateScrollRevealSections();
-            requestAnimationFrame(scrollRevealRafLoop);
-        })();
+        // Scroll-fade reveal is intentionally disabled.
 
         // -------------------------
         // Three.js background / shader blob
@@ -427,10 +443,11 @@
         if (!container) return;
 
         // -------------------------
-        // Background noise overlay (moved from `index.html`)
+        // Background noise overlay — off when using ref backroom (CSS scanlines/noise/light)
         // -------------------------
+        const ENABLE_WEBGL_NOISE_OVERLAY = false;
         const noiseCanvas = document.getElementById('glcanvas');
-        if (noiseCanvas) {
+        if (ENABLE_WEBGL_NOISE_OVERLAY && noiseCanvas) {
             const noiseRenderer = new THREE.WebGLRenderer({ canvas: noiseCanvas, antialias: false, alpha: true });
             noiseRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
             noiseRenderer.setClearColor(0x000000, 0);
@@ -682,8 +699,6 @@
         const landingBannerBodyEl = document.querySelector(
             '#landing .system-banner .t-body'
         );
-        const heroTitleWrapperEl = document.querySelector('#landing .hero-title-wrapper');
-        let landingHeroFadeBannerTopAtRest = null;
         const pointCloudScrollMotion = {
             triggerScrollPx: 60,
             travelScrollPx: 520,
@@ -1516,29 +1531,6 @@
                 );
             }
 
-            // Ouvre title + subheader: fade as `.system-banner` rises; ~transparent by banner top ≈ 265px.
-            if (heroTitleWrapperEl && landingSystemBannerEl) {
-                const sy = window.scrollY || window.pageYOffset || 0;
-                const bannerTop = landingSystemBannerEl.getBoundingClientRect().top;
-                const fadeEndPx = 265;
-                const minHeroOpacity = 0.06;
-                if (landingHeroFadeBannerTopAtRest == null) {
-                    landingHeroFadeBannerTopAtRest =
-                        sy < 8 ? bannerTop : fadeEndPx + 340;
-                }
-                const fadeStartPx = Math.max(landingHeroFadeBannerTopAtRest, fadeEndPx + 40);
-                let heroOpacity = 1;
-                if (bannerTop <= fadeEndPx) {
-                    heroOpacity = minHeroOpacity;
-                } else if (bannerTop < fadeStartPx) {
-                    const u =
-                        (bannerTop - fadeEndPx) / (fadeStartPx - fadeEndPx);
-                    heroOpacity =
-                        minHeroOpacity + (1 - minHeroOpacity) * u;
-                }
-                heroTitleWrapperEl.style.opacity = String(heroOpacity);
-            }
-
             simUniforms.uTime.value = elapsedTime;
             particleMat.uniforms.uTime.value = elapsedTime;
             simUniforms.uMouse.value.set(mouseX, mouseY);
@@ -1614,9 +1606,6 @@
         animate();
 
         window.addEventListener('resize', () => {
-            if ((window.scrollY || window.pageYOffset || 0) < 8) {
-                landingHeroFadeBannerTopAtRest = null;
-            }
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1647,28 +1636,6 @@
                         1 - Math.abs(bannerCenterY - viewportCenterY) / maxDistance
                     )
                 );
-            }
-
-            if (heroTitleWrapperEl && landingSystemBannerEl) {
-                const sy = window.scrollY || window.pageYOffset || 0;
-                const bannerTop = landingSystemBannerEl.getBoundingClientRect().top;
-                const fadeEndPx = 265;
-                const minHeroOpacity = 0.06;
-                if (landingHeroFadeBannerTopAtRest == null) {
-                    landingHeroFadeBannerTopAtRest =
-                        sy < 8 ? bannerTop : fadeEndPx + 340;
-                }
-                const fadeStartPx = Math.max(landingHeroFadeBannerTopAtRest, fadeEndPx + 40);
-                let heroOpacity = 1;
-                if (bannerTop <= fadeEndPx) {
-                    heroOpacity = minHeroOpacity;
-                } else if (bannerTop < fadeStartPx) {
-                    const u =
-                        (bannerTop - fadeEndPx) / (fadeStartPx - fadeEndPx);
-                    heroOpacity =
-                        minHeroOpacity + (1 - minHeroOpacity) * u;
-                }
-                heroTitleWrapperEl.style.opacity = String(heroOpacity);
             }
 
             const motionProgress = Math.max(scrollProgress, bannerCenterProgress);
@@ -1720,11 +1687,7 @@
 
         animateWithoutPointCloud();
 
-        window.addEventListener('resize', () => {
-            if ((window.scrollY || window.pageYOffset || 0) < 8) {
-                landingHeroFadeBannerTopAtRest = null;
-            }
-        });
+        window.addEventListener('resize', () => {});
         }
     }
 

@@ -1,0 +1,94 @@
+.skin-backroom {
+  background: #000;
+  color: #fff;
+  color-scheme: dark;
+}
+
+/* ── Unified select with custom arrow ── */
+.br-select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.br-select-wrap::after {
+  content: "▾";
+  position: absolute;
+  right: 0;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.25);
+  pointer-events: none;
+  line-height: 1;
+}
+
+.br-select {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding-right: 14px; /* room for ▾ */
+}
+
+/* ── Unified small icon ── */
+.br-icon {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  line-height: 1;
+}
+
+/* ── techno beat: sharp kick attack, quick decay, long rest ── */
+@keyframes techno-beat {
+  0%   { transform: scale(1)     translateY(0px); }
+  4%   { transform: scale(1.028) translateY(-1.5px); }
+  10%  { transform: scale(0.989) translateY(0.8px); }
+  18%  { transform: scale(1)     translateY(0px); }
+  100% { transform: scale(1)     translateY(0px); }
+}
+
+/* ── techno tremor: fine electric current jitter ── */
+@keyframes techno-tremor {
+  0%   { transform: translate(0px,    0px); }
+  14%  { transform: translate(-0.7px, 0.4px); }
+  28%  { transform: translate(0.6px,  -0.6px); }
+  42%  { transform: translate(-0.5px, 0.7px); }
+  57%  { transform: translate(0.8px,  -0.3px); }
+  71%  { transform: translate(-0.4px, 0.5px); }
+  85%  { transform: translate(0.5px,  -0.4px); }
+  100% { transform: translate(0px,    0px); }
+}
+
+.techno-beat {
+  display: inline-block;
+  animation: techno-beat 0.44s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.techno-tremor {
+  display: inline-block;
+  animation: techno-tremor 0.065s linear infinite;
+  font-size: 28px;
+  width: 280px;
+}
+
+/* ── Field validation error ── */
+@keyframes br-shake {
+  0%   { transform: translateX(0); }
+  12%  { transform: translateX(-6px); }
+  25%  { transform: translateX(5px); }
+  37%  { transform: translateX(-4px); }
+  50%  { transform: translateX(4px); }
+  62%  { transform: translateX(-3px); }
+  75%  { transform: translateX(2px); }
+  87%  { transform: translateX(-1px); }
+  100% { transform: translateX(0); }
+}
+
+.br-field-error {
+  border-color: rgba(220, 38, 38, 0.55) !important;
+}
+
+.br-shake {
+  animation: br-shake 0.38s ease-out;
+}
+
