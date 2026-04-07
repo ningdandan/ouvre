@@ -1,0 +1,4 @@
+window.OUVRE_LOCAL_CONFIG = {
+  KLAVIYO_SITE_ID: "YeGeaQ",
+  KLAVIYO_LIST_ID: "WjvQ5W",
+};
