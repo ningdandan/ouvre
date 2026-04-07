@@ -221,6 +221,7 @@
             const priceEl = productModal.querySelector('.product-modal__price');
             const descEl = productModal.querySelector('.product-modal__desc');
             const specsEl = document.getElementById('product-modal-specs');
+            const galleryEl = productModal.querySelector('.product-modal__gallery');
             const versionButtons = productModal.querySelectorAll('.product-modal__version-btn');
             const ctaBtn = productModal.querySelector('.product-modal__cta');
             let lastFocusEl = null;
@@ -239,6 +240,19 @@
                 },
             };
 
+            const modalGalleryImages = {
+                babylon: [
+                    { src: 'src/IMG_4370.jpg', alt: 'Babylon edition detail 01' },
+                    { src: 'src/cover_1.jpg', alt: 'Babylon edition detail 02' },
+                    { src: 'src/IMG_4374.jpg', alt: 'Babylon edition detail 03' },
+                ],
+                flow: [
+                    { src: 'src/IMG_4365.jpg', alt: 'flow edition detail 01' },
+                    { src: 'src/cover_2.jpg', alt: 'flow edition detail 02' },
+                    { src: 'src/IMG_4406.jpg', alt: 'flow edition detail 03' },
+                ],
+            };
+
             const formatUSD = (raw) => {
                 const num = parseFloat(String(raw).replace(/[^0-9.]/g, ''), 10);
                 if (Number.isNaN(num)) return raw ? String(raw) : '—';
@@ -246,6 +260,18 @@
                     style: 'currency',
                     currency: 'USD',
                 }).format(num);
+            };
+
+            const updateModalGallery = (productKey) => {
+                if (!galleryEl) return;
+                const images =
+                    modalGalleryImages[productKey] || modalGalleryImages.flow;
+                galleryEl.innerHTML = images
+                    .map(
+                        (image) =>
+                            `<img src="${image.src}" alt="${image.alt}" loading="lazy">`
+                    )
+                    .join('');
             };
 
             const populateFromCard = (card, triggerBtn) => {
@@ -260,6 +286,7 @@
                 activeProductKey = (h3?.textContent || '')
                     .trim()
                     .toLowerCase();
+                updateModalGallery(activeProductKey);
                 if (subtitleEl) {
                     subtitleEl.textContent = subtitle;
                     subtitleEl.hidden = !subtitle;
