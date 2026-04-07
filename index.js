@@ -170,8 +170,13 @@
             </div>
             <div class="product-modal__detail">
                 <h2 id="product-modal-title" class="product-modal__title"></h2>
-                <p class="product-modal__subtitle t-label"></p>
-                <p class="product-modal__price" aria-live="polite"></p>
+                <div class="product-modal__pricing-row">
+                    <p class="product-modal__price" aria-live="polite"></p>
+                    <div class="filter-group product-modal__version-toggle" role="tablist" aria-label="Edition version">
+                        <button type="button" class="filter-btn product-modal__version-btn active" data-version="base" data-price="29" aria-selected="true">base</button>
+                        <button type="button" class="filter-btn product-modal__version-btn" data-version="nfc" data-price="39" aria-selected="false">NFC version</button>
+                    </div>
+                </div>
                 <p class="product-modal__desc t-body"></p>
                 <ul class="product-modal__specs" id="product-modal-specs"></ul>
                 <ul class="product-modal__specs product-modal__specs--dimensions" aria-label="Dimensions">
@@ -179,7 +184,7 @@
                 </ul>
                 <p class="product-modal__edition"><span class="t-label">Edition</span><span> Numbered studio release.</span></p>
                 <div class="product-modal__cta-block">
-                    <button type="button" class="product-modal__cta" data-text="Add to cart">Add to cart</button>
+                    <button type="button" class="product-modal__cta" data-text="Checkout">Checkout</button>
                     <p class="product-modal__shipping-returns t-body">Shipping &amp; returns — Ships in 3–5 business days. Final sale on opened editions; unopened items may be returned within 14 days.</p>
                 </div>
             </div>
@@ -216,8 +221,23 @@
             const priceEl = productModal.querySelector('.product-modal__price');
             const descEl = productModal.querySelector('.product-modal__desc');
             const specsEl = document.getElementById('product-modal-specs');
+            const versionButtons = productModal.querySelectorAll('.product-modal__version-btn');
+            const ctaBtn = productModal.querySelector('.product-modal__cta');
             let lastFocusEl = null;
             let previousBodyOverflow = '';
+            let activeTriggerBtn = null;
+            let activeProductKey = '';
+
+            const checkoutUrls = {
+                flow: {
+                    base: 'https://buy.stripe.com/5kQ6oJfwQeo15itbdI7wA01',
+                    nfc: 'https://buy.stripe.com/eVqdRb4SccfTfX795A7wA00',
+                },
+                babylon: {
+                    base: 'https://buy.stripe.com/3cI5kF1G01Bf8uF95A7wA02',
+                    nfc: 'https://buy.stripe.com/00w7sN0BWbbPcKV4Pk7wA03',
+                },
+            };
 
             const formatUSD = (raw) => {
                 const num = parseFloat(String(raw).replace(/[^0-9.]/g, ''), 10);
@@ -237,6 +257,9 @@
                 const desc =
                     firstCol?.querySelector('p.t-body')?.textContent?.trim() || '';
                 titleEl.textContent = h3 ? h3.textContent.trim() : 'Edition';
+                activeProductKey = (h3?.textContent || '')
+                    .trim()
+                    .toLowerCase();
                 if (subtitleEl) {
                     subtitleEl.textContent = subtitle;
                     subtitleEl.hidden = !subtitle;
@@ -269,6 +292,33 @@
                 }
             };
 
+            const applyModalVersion = (targetBtn) => {
+                if (!targetBtn) return;
+                versionButtons.forEach((btn) => {
+                    const isActive = btn === targetBtn;
+                    btn.classList.toggle('active', isActive);
+                    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                });
+                const nextPrice = targetBtn.dataset.price || '29';
+                if (priceEl) priceEl.textContent = formatUSD(nextPrice);
+                if (activeTriggerBtn) {
+                    activeTriggerBtn.dataset.price = nextPrice;
+                    const baseEditionId =
+                        activeTriggerBtn.dataset.editionBaseId ||
+                        activeTriggerBtn.dataset.editionId ||
+                        '';
+                    const nextVersion = targetBtn.dataset.version || 'base';
+                    if (baseEditionId) {
+                        activeTriggerBtn.dataset.editionBaseId = baseEditionId;
+                        activeTriggerBtn.dataset.editionId = `${baseEditionId}-${nextVersion}`;
+                    }
+                }
+                if (ctaBtn) {
+                    const nextUrl = checkoutUrls[activeProductKey]?.[targetBtn.dataset.version || 'base'] || '';
+                    ctaBtn.dataset.checkoutUrl = nextUrl;
+                }
+            };
+
             const closeModal = () => {
                 productModal.setAttribute('hidden', '');
                 productModal.setAttribute('aria-hidden', 'true');
@@ -277,12 +327,18 @@
                 if (lastFocusEl && typeof lastFocusEl.focus === 'function') {
                     lastFocusEl.focus();
                 }
+                activeTriggerBtn = null;
                 lastFocusEl = null;
             };
 
             const openModal = (card, triggerBtn) => {
                 lastFocusEl = document.activeElement;
+                activeTriggerBtn = triggerBtn;
                 populateFromCard(card, triggerBtn);
+                const defaultVersionBtn =
+                    productModal.querySelector('.product-modal__version-btn[data-version="base"]') ||
+                    versionButtons[0];
+                applyModalVersion(defaultVersionBtn);
                 productModal.removeAttribute('hidden');
                 productModal.setAttribute('aria-hidden', 'false');
                 previousBodyOverflow = document.body.style.overflow;
@@ -298,6 +354,20 @@
                     e.preventDefault();
                     closeModal();
                 }
+            }
+
+            versionButtons.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    applyModalVersion(btn);
+                });
+            });
+
+            if (ctaBtn) {
+                ctaBtn.addEventListener('click', () => {
+                    const targetUrl = ctaBtn.dataset.checkoutUrl || '';
+                    if (!targetUrl) return;
+                    window.location.href = targetUrl;
+                });
             }
 
             document.querySelectorAll('.drop-acquire-btn').forEach((btn) => {

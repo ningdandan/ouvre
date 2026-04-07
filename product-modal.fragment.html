@@ -11,14 +11,19 @@
             </div>
             <div class="product-modal__detail">
                 <h2 id="product-modal-title" class="product-modal__title"></h2>
-                <p class="product-modal__subtitle t-label"></p>
-                <p class="product-modal__price" aria-live="polite"></p>
+                <div class="product-modal__pricing-row">
+                    <p class="product-modal__price" aria-live="polite"></p>
+                    <div class="filter-group product-modal__version-toggle" role="tablist" aria-label="Edition version">
+                        <button type="button" class="filter-btn product-modal__version-btn active" data-version="base" data-price="29" aria-selected="true">base</button>
+                        <button type="button" class="filter-btn product-modal__version-btn" data-version="nfc" data-price="39" aria-selected="false">NFC version</button>
+                    </div>
+                </div>
                 <p class="product-modal__desc t-body"></p>
                 <ul class="product-modal__specs" id="product-modal-specs"></ul>
                 
                 <div class="product-modal__cta-block">
-                    <button type="button" class="product-modal__cta" data-text="Add to cart">Add to cart</button>
-                    <p class="product-modal__shipping-returns t-body">Shipping &amp; returns — Ships in 3–5 business days. Final sale on opened editions; unopened items may be returned within 14 days.</p>
+                    <button type="button" class="product-modal__cta" data-text="Checkout">Checkout</button>
+                    <p class="product-modal__shipping-returns t-body">Shipping &amp; returns — NYC Local delivery on every Thursday. Final sale on opened editions.</p>
                 </div>
             </div>
         </div>

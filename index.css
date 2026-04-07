@@ -1148,11 +1148,37 @@ footer {
     color: var(--muted);
 }
 
+.product-modal__version-label {
+    margin-top: var(--space-xs);
+}
+
+.product-modal__version-toggle {
+    gap: 0;
+    border: 1px solid var(--border);
+    width: fit-content;
+}
+
+.product-modal__version-btn {
+    padding: 4px 8px;
+}
+
+.product-modal__version-btn.active {
+    color: var(--fg);
+    background: #0a0a0a;
+}
+
+.product-modal__pricing-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
 .product-modal__price {
     font-family: var(--font-mono);
     font-size: 1.1rem;
     color: var(--fg);
-    margin-top: var(--space-xs);
+    margin-top: 0;
 }
 
 .product-modal__desc {
