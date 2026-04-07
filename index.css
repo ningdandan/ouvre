@@ -6,9 +6,9 @@
     --border-hover: #333336;
     --accent: #a3a3a3;
     
-    --font-sans: 'Inter', -apple-system, sans-serif;
-    --font-title: 'Jacquard 12', var(--font-sans);
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Space Grotesk', -apple-system, sans-serif;
+    --font-title: var(--font-sans);
+    --font-mono: var(--font-sans);
     
     --space-xs: 4px;
     --space-sm: 12px;
@@ -34,7 +34,7 @@ body {
     line-height: 1.4;
 }
 
-h1, h2, h3, h4 { font-weight: 400; letter-spacing: -0.02em; }
+h1, h2, h3, h4 { font-weight: 300; letter-spacing: -0.02em; }
 
 h2{
     font-family: var(--font-title);
