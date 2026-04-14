@@ -173,8 +173,8 @@
                 <div class="product-modal__pricing-row">
                     <p class="product-modal__price" aria-live="polite"></p>
                     <div class="filter-group product-modal__version-toggle" role="tablist" aria-label="Edition version">
-                        <button type="button" class="filter-btn product-modal__version-btn active" data-version="base" data-price="29" aria-selected="true">base</button>
-                        <button type="button" class="filter-btn product-modal__version-btn" data-version="nfc" data-price="39" aria-selected="false">NFC version</button>
+                        <button type="button" class="filter-btn product-modal__version-btn active" data-version="nfc" data-price="42" aria-selected="true">NFC</button>
+                        <button type="button" class="filter-btn product-modal__version-btn" data-version="base" data-price="29" aria-selected="false">NO NFC</button>
                     </div>
                 </div>
                 <p class="product-modal__desc t-body"></p>
@@ -363,7 +363,7 @@
                 activeTriggerBtn = triggerBtn;
                 populateFromCard(card, triggerBtn);
                 const defaultVersionBtn =
-                    productModal.querySelector('.product-modal__version-btn[data-version="base"]') ||
+                    productModal.querySelector('.product-modal__version-btn[data-version="nfc"]') ||
                     versionButtons[0];
                 applyModalVersion(defaultVersionBtn);
                 productModal.removeAttribute('hidden');

@@ -527,29 +527,42 @@ section {
     text-align: right;
 }
 
-/* Keep metadata -> button spacing consistent across drop cards */
-#drops .drop-info .info-col:nth-child(2) button {
-    margin-top: 12px !important;
-    align-self: flex-end;
+/* Card CTA sits below info grid and matches image width */
+#drops .drop-card > .drop-acquire-btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0;
+    padding: 14px var(--space-md);
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-align: center;
 }
 
 /* Acquire CTA + contact submit: outline, hollow, jitter + holo glitch layers */
-#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn,
+#drops button.drop-acquire-btn,
 #contactForm button.glitch-outline-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: #fff;
-    padding: 8px;
+    background: var(--fg);
+    border: none;
+    border-radius: 0;
+    color: #000;
+    padding: 14px var(--space-md);
     font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     cursor: pointer;
     position: relative;
     display: inline-block;
     overflow: visible;
-    transition: border-color 0.2s ease, color 0.2s ease;
-    text-shadow: 0 0 14px rgba(255, 255, 255, 0.22);
+    transition: opacity 0.15s ease;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
     animation: hero-title-jitter 0.46s steps(1, end) infinite;
 }
 
@@ -560,13 +573,13 @@ section {
     margin-top: var(--space-sm);
 }
 
-#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn:hover,
+#drops button.drop-acquire-btn:hover,
 #contactForm button.glitch-outline-btn:hover {
-    border-color: var(--border-hover);
+    opacity: 0.92;
 }
 
-#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::before,
-#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after,
+#drops button.drop-acquire-btn::before,
+#drops button.drop-acquire-btn::after,
 #contactForm button.glitch-outline-btn::before,
 #contactForm button.glitch-outline-btn::after {
     content: attr(data-text);
@@ -587,7 +600,7 @@ section {
     color: transparent;
 }
 
-#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::before,
+#drops button.drop-acquire-btn::before,
 #contactForm button.glitch-outline-btn::before {
     background-image: linear-gradient(
         110deg,
@@ -600,13 +613,13 @@ section {
     );
     background-size: 260% 100%;
     transform: translate(-2px, 0);
-    mix-blend-mode: screen;
+    mix-blend-mode: multiply;
     animation:
         hero-title-glitch-r 0.42s steps(2, end) infinite,
         hero-title-holo-shift 5.5s linear infinite;
 }
 
-#drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after,
+#drops button.drop-acquire-btn::after,
 #contactForm button.glitch-outline-btn::after {
     background-image: linear-gradient(
         -125deg,
@@ -618,21 +631,21 @@ section {
     );
     background-size: 280% 100%;
     transform: translate(2px, 0);
-    mix-blend-mode: screen;
+    mix-blend-mode: multiply;
     animation:
         hero-title-glitch-b 0.48s steps(2, end) infinite,
         hero-title-holo-shift-rev 6.8s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn,
+    #drops button.drop-acquire-btn,
     #contactForm button.glitch-outline-btn {
         animation: none;
         text-shadow: none;
     }
 
-    #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::before,
-    #drops .drop-info .info-col:nth-child(2) button.drop-acquire-btn::after,
+    #drops button.drop-acquire-btn::before,
+    #drops button.drop-acquire-btn::after,
     #contactForm button.glitch-outline-btn::before,
     #contactForm button.glitch-outline-btn::after {
         content: none;
