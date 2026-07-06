@@ -1,0 +1,3 @@
+# Apache / cPanel — all paths → wetmarket.art (301 permanent)
+RewriteEngine On
+RewriteRule ^(.*)$ http://wetmarket.art/ [R=301,L]

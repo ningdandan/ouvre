@@ -1,0 +1,16 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "ouvre.nyc" }],
+      "destination": "http://wetmarket.art/",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.ouvre.nyc" }],
+      "destination": "http://wetmarket.art/",
+      "permanent": true
+    }
+  ]
+}
